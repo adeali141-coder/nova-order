@@ -357,7 +357,20 @@ function injectGTM(id){if(!id)return;window.dataLayer=window.dataLayer||[];(func
 function injectGA4(id){if(!id)return;window.dataLayer=window.dataLayer||[];var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+id;document.head.appendChild(s);window.gtag=function(){dataLayer.push(arguments)};window.gtag('js',new Date());window.gtag('config',id)}
 function trackEvent(eventName,params){if(window.dataLayer)window.dataLayer.push(Object.assign({event:eventName},params));if(window.gtag)window.gtag('event',eventName,params);if(CONFIG.APPS_SCRIPT_URL)trackToSheet(eventName,params)}
 function trackToSheet(eventName,params){try{fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'trackEvent',sheet:activeSheetName,event:eventName,orderId:params.transaction_id||'',itemsCount:params.value||0,revenue:params.revenue||params.value||0,details:JSON.stringify(params)})}).catch(function(){})}catch(e){}}
-
+function loadSafeImage(url,imgEl){
+    if(!url||url.trim()==='')return;
+    var clean=url.split('?')[0];
+    var proxy='https://wsrv.nl/?url='+encodeURIComponent(clean)+'&w=120&q=75&output=webp';
+    fetch(proxy).then(function(r){
+        if(!r.ok)throw new Error('fail');
+        return r.blob();
+    }).then(function(blob){
+        imgEl.src=URL.createObjectURL(blob);
+    }).catch(function(){
+        imgEl.src=clean;
+    });
+}
+    
 function openVariantModal(){
     selectedColor=null;selectedSize=null;currentQty=1;
     document.getElementById('qtyDisplay').textContent='1';
@@ -375,21 +388,15 @@ function openVariantModal(){
             s.setAttribute('aria-label',name);
             s.onclick=function(){selectColor(name)};
 
-            if(info.image){
-                s.className='swatch';
-                var img=document.createElement('img');
-               img.src=variantImg(info.image);
-                img.alt=name;
-                img.loading='lazy';
-                img.referrerPolicy='no-referrer';
-                s.appendChild(img);
-            }else{
-                s.className='swatch swatch-circle';
-                s.style.background=info.code;
-            }
-            c.appendChild(s);
-        });
-    }
+           if(info.image){
+    s.className='swatch';
+    s.style.background=info.code;
+    var img=document.createElement('img');
+    img.alt=name;
+    img.loading='lazy';
+    loadSafeImage(info.image,img);
+    s.appendChild(img);
+}
 
     if(hasSizes()&&!noSku){
         var c2=document.getElementById('sizePills');
