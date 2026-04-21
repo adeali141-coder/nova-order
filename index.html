@@ -6,10 +6,9 @@
     <meta name="referrer" content="no-referrer">
     <title>Nova Variety - Order</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <script>
-    tailwind.config={theme:{extend:{colors:{gold:{300:'#E2C97E',400:'#C9A84C',500:'#B8943A',600:'#A68A35',700:'#8A722D'},dark:{100:'#3A3A38',200:'#2A2A28',300:'#222222',400:'#1C1C1C',500:'#161616',600:'#0E0E0E',700:'#0A0A0A'},cream:{100:'#F0EBE0',200:'#D6D0C2',300:'#9A9488',400:'#5A5650'}},fontFamily:{display:['Playfair Display','serif'],body:['DM Sans','sans-serif']}}}}
+    <script>tailwind.config={theme:{extend:{colors:{gold:{300:'#E2C97E',400:'#C9A84C',500:'#B8943A',600:'#A68A35',700:'#8A722D'},dark:{100:'#3A3A38',200:'#2A2A28',300:'#222222',400:'#1C1C1C',500:'#161616',600:'#0E0E0E',700:'#0A0A0A'},cream:{100:'#F0EBE0',200:'#D6D0C2',300:'#9A9488',400:'#5A5650'}},fontFamily:{display:['Playfair Display','serif'],body:['DM Sans','sans-serif']}}}}
     </script>
     <style>
         :root{--accent:#C9A84C;--accent-light:#E2C97E;--bg:#0E0E0E;--card:rgba(28,28,28,0.75);--border:#2A2A28;--text:#F0EBE0;--muted:#9A9488;--card-solid:#1C1C1C}
@@ -29,22 +28,25 @@
         .modal-overlay.open .modal-box{transform:scale(1) translateY(0);opacity:1}
         .modal-box{transform:scale(.95) translateY(10px);opacity:0;transition:all .3s ease}
         .glass{background:var(--card);backdrop-filter:blur(12px);border:1px solid rgba(201,168,76,.1)}
-        .btn-gold{background:linear-gradient(135deg,var(--accent),var(--accent-light));color:#0E0E0E;font-weight:700;border:none;cursor:pointer;transition:all .3s ease;position:relative;overflow:hidden;font-family:'DM Sans',sans-serif}
+        .btn-gold{background:linear-gradient(135deg,var(--accent),var(--accent-light));color:#0E0E0;font-weight:700;border:none;cursor:pointer;transition:all .3s ease;position:relative;overflow:hidden;font-family:'DM Sans',sans-serif}
         .btn-gold:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(201,168,76,.3)}
         .btn-gold:active{transform:translateY(0)}
-        .btn-gold::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,.2) 50%,transparent 70%);transform:translateX(-100%);transition:transform .5s ease}
+        .btn-gold::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,.2) 50%,transparent 70%);transform:translateX(-100%);transition:transform:translateX(.5s ease}
         .btn-gold:hover::after{transform:translateX(100%)}
         .btn-gold:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
         .btn-gold:disabled::after{display:none}
-        .swatch{width:60px;height:60px;border-radius:0;cursor:pointer;border:2px solid transparent;transition:all .2s ease;position:relative;flex-shrink:0;overflow:hidden;background:var(--card-solid,#222)}
-        .swatch:hover{transform:scale(1.08);opacity:.9}
-        .swatch.selected{border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,168,76,.3);opacity:1}
-        .swatch.selected::after{content:'\2713';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;z-index:2;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
-        .swatch img{width:100%;height:100%;object-fit:cover;display:block}
-        .swatch-circle{border-radius:50%}.swatch-circle img{border-radius:50%}
+        .variant-card{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--card-solid,#222);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s ease;min-width:88px;max-width:48%;flex:1 1 0 auto}
+        .variant-card:hover{border-color:rgba(201,168,76,.4)}
+        .variant-card.selected{border-color:var(--accent);background:rgba(201,168,76,.08)}
+        .variant-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:1.5px solid rgba(255,255,255,.15)}
+        .variant-info{flex:1;min-width:0;overflow:hidden}
+        .variant-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .variant-price{font-size:12px;font-weight:700;color:#C9A84C;white-space:nowrap}
+        .variant-stock{font-size:10px;color:var(--muted);white-space:nowrap}
         .size-pill{padding:8px 20px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-weight:500;transition:all .2s ease;font-family:'DM Sans',sans-serif;font-size:14px}
         .size-pill:hover{border-color:var(--cream-300);color:var(--text)}
         .size-pill.selected{border-color:var(--accent);background:rgba(201,168,76,.1);color:var(--accent)}
+        .size-pill.disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
         .qty-btn{width:40px;height:40px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s ease;font-family:'DM Sans',sans-serif}
         .qty-btn:hover{border-color:var(--accent);color:var(--accent)}
         .qty-btn:disabled{opacity:.3;cursor:not-allowed}
@@ -82,7 +84,6 @@
         .phone-group input{flex:1}
         .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
-        .swatch-img-broken{display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);text-align:center;padding:4px;line-height:1.2}
         body.light-theme{--card:rgba(255,255,255,.8);--card-solid:#fff;--border:rgba(0,0,0,.1);--text:#1A1A18;--muted:#6A6458}
         body.light-theme .input-field{background:rgba(255,255,255,.9);border-color:var(--border);color:var(--text)}
         body.light-theme .input-field::placeholder{color:#9A9488}
@@ -92,7 +93,10 @@
         body.light-theme .size-pill.selected{border-color:var(--accent);background:rgba(201,168,76,.08);color:#8A722D}
         body.light-theme .order-item{background:rgba(0,0,0,.04)}
         body.light-theme .divider{background:linear-gradient(90deg,transparent,rgba(0,0,0,.1),transparent)}
-        body.light-theme .swatch{background:var(--card-solid,#f0f0f0)}
+        body.light-theme .variant-card{background:var(--card-solid,#f0f0f0)}
+        body.light-theme .variant-name{color:#1A1A18}
+        body.light-theme .variant-stock{color:#6A6458}
+        body.light-theme .variant-price{color:#8A722D}
         @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
     </style>
 </head>
@@ -107,11 +111,12 @@
         <p class="text-sm" style="color:var(--muted)" data-i18n="loading"></p>
     </div>
 
+    <!-- ===== ORDER FORM ===== -->
     <div id="viewOrder" class="view relative z-10">
         <div class="max-w-lg mx-auto px-4 py-6">
             <div class="flex justify-end gap-1 mb-4 flex-wrap" id="langBar"></div>
             <div class="rounded-2xl overflow-hidden mb-6 border border-dark-200">
-                <img id="bannerImg" src="" alt="Banner" class="w-full h-auto object-cover" loading="eager" referrerpolicy="no-referrer">
+                <img id="bannerImg" src="" alt="Banner" class="w-full h-auto object-cover" loading="eager">
             </div>
             <div class="mb-6">
                 <h1 id="productTitle" class="font-display text-3xl sm:text-4xl font-black leading-tight mb-3"></h1>
@@ -121,6 +126,7 @@
                 <i class="fa-solid fa-plus"></i><span data-i18n="add_to_order"></span>
             </button>
             <p id="priceHint" class="text-center text-sm mb-6" style="color:var(--muted)"></p>
+
             <div id="orderListSection" class="hidden">
                 <div class="glass rounded-2xl p-5 mb-6">
                     <div class="flex items-center gap-2 mb-4">
@@ -149,6 +155,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="buyerForm" class="glass rounded-2xl p-5 mb-6">
                 <div class="flex items-center gap-2 mb-5">
                     <i class="fa-solid fa-user-pen text-gold-400"></i>
@@ -165,12 +172,13 @@
                 <i class="fa-solid fa-arrow-right"></i><span data-i18n="checkout_now"></span>
             </button>
             <div class="rounded-2xl overflow-hidden mb-8 border border-dark-200">
-                <img id="footerImg" src="" alt="Footer" class="w-full h-auto object-cover" loading="lazy" referrerpolicy="no-referrer">
+                <img id="footerImg" src="" alt="Footer" class="w-full h-auto object-cover" loading="lazy">
             </div>
             <p class="text-center text-xs pb-4" style="color:var(--muted)">Nova Variety &mdash; Dropship Worldwide</p>
         </div>
     </div>
 
+    <!-- ===== SUCCESS PAGE ===== -->
     <div id="viewSuccess" class="view relative z-10">
         <div class="max-w-lg mx-auto px-4 py-8">
             <div class="flex justify-end gap-1 mb-6 flex-wrap" id="langBarSuccess"></div>
@@ -181,7 +189,7 @@
             </div>
             <div class="flex justify-center mb-6">
                 <div class="img-glow rounded-2xl overflow-hidden border border-dark-200 max-w-xs w-full">
-                    <img id="successProductImg" src="" alt="Product" class="w-full h-auto object-cover" referrerpolicy="no-referrer">
+                    <img id="successProductImg" src="" alt="Product" class="w-full h-auto object-cover">
                 </div>
             </div>
             <h2 id="successProductTitle" class="font-display text-xl font-bold text-center mb-6"></h2>
@@ -222,30 +230,36 @@
         </div>
     </div>
 
+    <!-- ===== VARIANT MODAL ===== -->
     <div id="modalVariant" class="modal-overlay" onclick="if(event.target===this)closeVariantModal()">
         <div class="modal-box glass rounded-2xl p-6 w-full max-w-sm mx-4">
-            <div class="flex items-center justify-between mb-5">
-                <h3 class="font-display text-xl font-bold" data-i18n="select_variant"></h3>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display text-lg font-bold" data-i18n="select_variant"></h3>
                 <button onclick="closeVariantModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-dark-300 transition-all" style="color:var(--muted)" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="colorSection" class="mb-5 hidden">
+
+            <!-- Color Cards -->
+            <div id="colorSection" class="mb-4 hidden">
                 <p class="input-label" data-i18n="color"></p>
-                <div id="colorSwatches" class="flex flex-wrap gap-3"></div>
+                <div id="colorSwatches" class="flex flex-wrap gap-2"></div>
             </div>
-            <div id="sizeSection" class="mb-5 hidden">
+
+            <!-- Size Pills -->
+            <div id="sizeSection" class="hidden">
                 <p class="input-label" data-i18n="size"></p>
                 <div id="sizePills" class="flex flex-wrap gap-2"></div>
             </div>
-            <div class="mb-5">
-                <p class="input-label" data-i18n="quantity"></p>
-                <div class="flex items-center gap-4">
-                    <button class="qty-btn" onclick="changeQty(-1)" id="qtyMinus"><i class="fa-solid fa-minus text-sm"></i></button>
-                    <span id="qtyDisplay" class="text-2xl font-bold w-12 text-center">1</span>
-                    <button class="qty-btn" onclick="changeQty(1)" id="qtyPlus"><i class="fa-solid fa-plus text-sm"></i></button>
-                    <span id="stockHint" class="text-xs ml-2" style="color:var(--muted)"></span>
-                </div>
+
+            <!-- Quantity -->
+            <div class="flex items-center gap-4 mb-4">
+                <button class="qty-btn" onclick="changeQty(-1)" id="qtyMinus"><i class="fa-solid fa-minus text-sm"></i></button>
+                <span id="qtyDisplay" class="text-2xl font-bold w-12 text-center">1</span>
+                <button class="qty-btn" onclick="changeQty(1)" id="qtyPlus"><i class="fa-solid fa-plus text-sm"></i></button>
+                <span id="stockHint" class="text-xs ml-2" style="color:var(--muted)"></span>
             </div>
-            <div class="rounded-xl p-3 mb-5 flex justify-between items-center" style="background:var(--card-solid,#222)">
+
+            <!-- Price & Button -->
+            <div class="rounded-xl p-3 mb-4 flex justify-between items-center" style="background:var(--card-solid,#222)">
                 <span class="text-sm" style="color:var(--muted)" data-i18n="item_price"></span>
                 <span id="variantPrice" class="font-bold text-gold-400 text-lg"></span>
             </div>
@@ -256,6 +270,9 @@
     </div>
 
 <script>
+/* ============================================================
+   KONFIGURASI — EDIT BAGIAN INI
+   ============================================================ */
 var CONFIG = {
     APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxgIdG3LKW7KGinrvsmYY69KkwGIKLQo4V1WaDpjkldQ5qq45IjnELY2-O7WJ47kzH4GQ/exec',
     DEFAULT_SHEET: 'Long_Sleeve',
@@ -268,10 +285,9 @@ var CONFIG = {
     bgColor: '',
     gtmId: '',
     ga4Id: '',
-    COMPRESS_IMAGES: true,
     product: {
         title: 'Striped Long Sleeve Shirt',
-        description: 'Premium quality striped long sleeve shirt.',
+        description: 'Premium quality striped long sleeve shirt. Handcrafted from premium full-grain leather, each piece carries its own unique character.',
         bannerImage: 'https://picsum.photos/seed/nv-ls-ban/800/300.jpg',
         productImage: 'https://picsum.photos/seed/nv-ls-prod/500/500.jpg',
         footerImage: 'https://picsum.photos/seed/nv-ls-foot/800/180.jpg',
@@ -281,28 +297,47 @@ var CONFIG = {
         skuMode: 'on'
     },
     variants: [
-        {sku:'LS-BLK-S',color:'Black',colorCode:'#1A1A1A',size:'S',stock:20,hpp:0,price:0,weight:0.3,variantImage:''}
+        {sku:'LS-BLK-S',color:'Black',colorCode:'#1A1A1A',size:'S',stock:15,hpp:25,price:59.99,weight:0.3,variantImage:''},
+        {sku:'LS-BLK-M',color:'Black',colorCode:'#1A1A1A',size:'M',stock:20,hpp:25,price:59.99,weight:0.3,variantImage:''},
+        {sku:'LS-BLK-L',color:'Black',colorCode:'#1A1A1A',size:'L',stock:8,hpp:27,price:64.99,weight:0.4,variantImage:''},
+        {sku:'LS-BRN-S',color:'Brown',colorCode:'#6B3A2A',size:'S',stock:10,hpp:25,price:59.99,weight:0.3,variantImage:''},
+        {sku:'LS-BRN-M',color:'Brown',colorCode:'#6B3A2A',size:'M',stock:12,hpp:25,price:59.99,weight:0.3,variantImage:''},
+        {sku:'LS-BRN-L',color:'Brown',colorCode:'#6B3A2A',size:'L',stock:5,hpp:27,price:64.99,weight:0.4,variantImage:''},
+        {sku:'LS-TAN-S',color:'Tan',colorCode:'#C4A36E',size:'S',stock:8,hpp:24,price:56.99,weight:0.3,variantImage:''},
+        {sku:'LS-TAN-M',color:'Tan',colorCode:'#C4A36E',size:'M',stock:6,hpp:24,price:56.99,weight:0.3,variantImage:''},
+        {sku:'LS-TAN-L',color:'Tan',colorCode:'#C4A36E',size:'L',stock:3,hpp:26,price:61.99,weight:0.4,variantImage:''}
     ]
 };
 
+/* ============================================================
+   INTERNATIONALIZATION — 7 BAHASA
+   ============================================================ */
 var i18n={
-en:{loading:'Loading product...',add_to_order:'Add to Order',select_variant:'Select Variant',color:'Color',size:'Size',quantity:'Quantity',add_to_list:'Add to List',your_order:'Your Order',empty_order_hint:'Your order list is empty.',remove:'Remove',subtotal:'Subtotal',total_weight:'Total Weight',shipping_cost:'Shipping Cost',min_1kg_note:'',grand_total:'Grand Total',checkout_now:'Checkout Now',buyer_info:'Buyer Information',full_name:'Full Name',phone_number:'WhatsApp Number',email_optional:'Email (optional)',shipping_address:'Shipping Address',order_success:'Order Placed',order_success_msg:'Please complete payment to confirm.',order_id:'Order ID',order_date:'Date',pay_with_paypal:'Pay with PayPal.Me',payment_note:'You will be redirected to PayPal.',seller_notified:'Order details sent to seller',check_email_spam:'Check email/spam for confirmation.',need_help:'Need help?',contact_wa:'Chat on WhatsApp',error_name:'Please enter your name',error_phone:'Enter a valid phone number',error_email:'Invalid email format',error_address:'Please enter your address',error_no_items:'Add at least one item',error_select_variant:'Please select a variant',item_price:'Item Price',available_stock:'Stock:',pcs:'pcs',kg:'Kg',per_kg:'/Kg',no_size:'One Size',added:'Added to order',order_confirmed:'Order confirmed',sending_data:'Sending order data...',digital_product:'Digital Product',from:'from'},
-id:{loading:'Memuat produk...',add_to_order:'Tambah ke Pesanan',select_variant:'Pilih Varian',color:'Warna',size:'Ukuran',quantity:'Jumlah',add_to_list:'Tambah ke Daftar',your_order:'Pesanan Anda',empty_order_hint:'Daftar pesanan masih kosong.',remove:'Hapus',subtotal:'Subtotal',total_weight:'Total Berat',shipping_cost:'Ongkos Kirim',min_1kg_note:'',grand_total:'Total Bayar',checkout_now:'Checkout Sekarang',buyer_info:'Informasi Pembeli',full_name:'Nama Lengkap',phone_number:'Nomor WhatsApp',email_optional:'Email (opsional)',shipping_address:'Alamat Pengiriman',order_success:'Pesanan Dibuat',order_success_msg:'Silakan selesaikan pembayaran.',order_id:'ID Pesanan',order_date:'Tanggal',pay_with_paypal:'Bayar via PayPal.Me',payment_note:'Anda akan diarahkan ke PayPal.',seller_notified:'Detail pesanan terkirim ke penjual',check_email_spam:'Cek email/spam.',need_help:'Butuh bantuan?',contact_wa:'Chat di WhatsApp',error_name:'Masukkan nama',error_phone:'Masukkan nomor valid',error_email:'Format email tidak valid',error_address:'Masukkan alamat',error_no_items:'Tambahkan minimal 1 item',error_select_variant:'Pilih varian',item_price:'Harga Item',available_stock:'Stok:',pcs:'pcs',kg:'Kg',per_kg:'/Kg',no_size:'Satu Ukuran',added:'Ditambahkan',order_confirmed:'Pesanan dikonfirmasi',sending_data:'Mengirim data...',digital_product:'Produk Digital',from:'mulai'},
-'es-mx':{loading:'Cargando producto...',add_to_order:'Agregar al Pedido',select_variant:'Seleccionar Variante',color:'Color',size:'Talla',quantity:'Cantidad',add_to_list:'Agregar',your_order:'Tu Pedido',empty_order_hint:'Lista vacia.',remove:'Eliminar',subtotal:'Subtotal',total_weight:'Peso Total',shipping_cost:'Costo de Envio',min_1kg_note:'',grand_total:'Total a Pagar',checkout_now:'Proceder al Pago',buyer_info:'Info del Comprador',full_name:'Nombre Completo',phone_number:'Numero WhatsApp',email_optional:'Correo (opcional)',shipping_address:'Direccion de Envio',order_success:'Pedido Realizado',order_success_msg:'Completa el pago.',order_id:'ID del Pedido',order_date:'Fecha',pay_with_paypal:'Pagar con PayPal.Me',payment_note:'Seras redirigido.',seller_notified:'Detalles enviados.',check_email_spam:'Revisa correo/spam.',need_help:'Necesitas ayuda?',contact_wa:'Chat en WhatsApp',error_name:'Ingresa tu nombre',error_phone:'Telefono valido',error_email:'Correo invalido',error_address:'Ingresa tu direccion',error_no_items:'Agrega al menos 1 articulo',error_select_variant:'Selecciona una variante',item_price:'Precio',available_stock:'Stock:',pcs:'pzs',kg:'Kg',per_kg:'/Kg',no_size:'Talla Unica',added:'Agregado',order_confirmed:'Pedido confirmado',sending_data:'Enviando datos...',digital_product:'Producto Digital',from:'desde'},
-'pt-br':{loading:'Carregando produto...',add_to_order:'Adicionar ao Pedido',select_variant:'Selecionar Variante',color:'Cor',size:'Tamanho',quantity:'Quantidade',add_to_list:'Adicionar',your_order:'Seu Pedido',empty_order_hint:'Lista vazia.',remove:'Remover',subtotal:'Subtotal',total_weight:'Peso Total',shipping_cost:'Custo de Envio',min_1kg_note:'',grand_total:'Total a Pagar',checkout_now:'Finalizar Compra',buyer_info:'Info do Comprador',full_name:'Nome Completo',phone_number:'Numero WhatsApp',email_optional:'E-mail (opcional)',shipping_address:'Endereco de Envio',order_success:'Pedido Realizado',order_success_msg:'Complete o pagamento.',order_id:'ID do Pedido',order_date:'Data',pay_with_paypal:'Pagar com PayPal.Me',payment_note:'Voce sera redirecionado.',seller_notified:'Detalhes enviados.',check_email_spam:'Verifique e-mail/spam.',need_help:'Precisa de ajuda?',contact_wa:'Chat no WhatsApp',error_name:'Insira seu nome',error_phone:'Telefone valido',error_email:'E-mail invalido',error_address:'Insira seu endereco',error_no_items:'Adicione pelo menos 1 item',error_select_variant:'Selecione uma variante',item_price:'Preco',available_stock:'Estoque:',pcs:'un',kg:'Kg',per_kg:'/Kg',no_size:'Tamanho Unico',added:'Adicionado',order_confirmed:'Pedido confirmado',sending_data:'Enviando dados...',digital_product:'Produto Digital',from:'a partir de'},
-it:{loading:'Caricamento prodotto...',add_to_order:'Aggiungi all\'Ordine',select_variant:'Seleziona Variante',color:'Colore',size:'Taglia',quantity:'Quantita',add_to_list:'Aggiungi',your_order:'Il Tuo Ordine',empty_order_hint:'Lista vuota.',remove:'Rimuovi',subtotal:'Subtotale',total_weight:'Peso Totale',shipping_cost:'Costo di Spedizione',min_1kg_note:'',grand_total:'Totale da Pagare',checkout_now:'Procedi al Pagamento',buyer_info:'Info Acquirente',full_name:'Nome Completo',phone_number:'Numero WhatsApp',email_optional:'Email (opzionale)',shipping_address:'Indirizzo di Spedizione',order_success:'Ordine Effettuato',order_success_msg:'Completa il pagamento.',order_id:'ID Ordine',order_date:'Data',pay_with_paypal:'Paga con PayPal.Me',payment_note:'Verrai reindirizzato.',seller_notified:'Dettagli inviati.',check_email_spam:'Controlla email/spam.',need_help:'Hai bisogno di aiuto?',contact_wa:'Chat su WhatsApp',error_name:'Inserisci il nome',error_phone:'Telefono valido',error_email:'Email non valida',error_address:'Inserisci l\'indirizzo',error_no_items:'Aggiungi almeno 1 articolo',error_select_variant:'Seleziona una variante',item_price:'Prezzo',available_stock:'Giacenza:',pcs:'pz',kg:'Kg',per_kg:'/Kg',no_size:'Taglia Unica',added:'Aggiunto',order_confirmed:'Ordine confermato',sending_data:'Invio dati...',digital_product:'Prodotto Digitale',from:'da'},
-es:{loading:'Cargando producto...',add_to_order:'Anadir al Pedido',select_variant:'Seleccionar Variante',color:'Color',size:'Talla',quantity:'Cantidad',add_to_list:'Anadir',your_order:'Tu Pedido',empty_order_hint:'Lista vacia.',remove:'Eliminar',subtotal:'Subtotal',total_weight:'Peso Total',shipping_cost:'Gastos de Envio',min_1kg_note:'',grand_total:'Total a Pagar',checkout_now:'Tramitar Pedido',buyer_info:'Info del Comprador',full_name:'Nombre Completo',phone_number:'Numero WhatsApp',email_optional:'Correo (opcional)',shipping_address:'Direccion de Envio',order_success:'Pedido Realizado',order_success_msg:'Completa el pago.',order_id:'ID del Pedido',order_date:'Fecha',pay_with_paypal:'Pagar con PayPal.Me',payment_note:'Seras redirigido.',seller_notified:'Detalles enviados.',check_email_spam:'Revisa correo/spam.',need_help:'Necesitas ayuda?',contact_wa:'Chat en WhatsApp',error_name:'Introduce tu nombre',error_phone:'Telefono valido',error_email:'Correo no valido',error_address:'Introduce tu direccion',error_no_items:'Anade al menos 1 articulo',error_select_variant:'Selecciona una variante',item_price:'Precio',available_stock:'Stock:',pcs:'uds',kg:'Kg',per_kg:'/Kg',no_size:'Talla Unica',added:'Anadido',order_confirmed:'Pedido confirmado',sending_data:'Enviando datos...',digital_product:'Producto Digital',from:'desde'},
-de:{loading:'Produkt laden...',add_to_order:'In den Warenkorb',select_variant:'Variante wahlen',color:'Farbe',size:'Grosse',quantity:'Menge',add_to_list:'Hinzufugen',your_order:'Ihre Bestellung',empty_order_hint:'Liste leer.',remove:'Entfernen',subtotal:'Zwischensumme',total_weight:'Gesamtgewicht',shipping_cost:'Versandkosten',min_1kg_note:'',grand_total:'Gesamtsumme',checkout_now:'Zur Kasse',buyer_info:'Kauferinformationen',full_name:'Vollstandiger Name',phone_number:'WhatsApp-Nummer',email_optional:'E-Mail (optional)',shipping_address:'Lieferadresse',order_success:'Bestellung aufgegeben',order_success_msg:'Schliessen Sie die Zahlung ab.',order_id:'Bestell-ID',order_date:'Datum',pay_with_paypal:'Mit PayPal.Me bezahlen',payment_note:'Weiterleitung zu PayPal.',seller_notified:'Details gesendet.',check_email_spam:'E-Mail/Spam prufen.',need_help:'Hilfe benotigt?',contact_wa:'Chat auf WhatsApp',error_name:'Name eingeben',error_phone:'Gultige Telefonnummer',error_email:'Ungultiges E-Mail-Format',error_address:'Adresse eingeben',error_no_items:'Mindestens 1 Artikel',error_select_variant:'Variante wahlen',item_price:'Preis',available_stock:'Bestand:',pcs:'Stk',kg:'Kg',per_kg:'/Kg',no_size:'Einheitsgrosse',added:'Hinzugefugt',order_confirmed:'Bestellung bestatigt',sending_data:'Daten gesendet...',digital_product:'Digitales Produkt',from:'ab'}
+en:{loading:'Loading product...',add_to_order:'Add to Order',select_variant:'Select Variant',color:'Color',size:'Size',quantity:'Quantity',add_to_list:'Add to List',your_order:'Your Order',empty_order_hint:'Your order list is empty.',remove:'Remove',subtotal:'Subtotal',total_weight:'Total Weight',shipping_cost:'Shipping Cost',grand_total:'Grand Total',checkout_now:'Checkout Now',buyer_info:'Buyer Information',full_name:'Full Name',phone_number:'WhatsApp Number',email_optional:'Email (optional)',shipping_address:'Shipping Address',order_success:'Order Placed',order_success_msg:'Please complete payment to confirm.',order_id:'Order ID',order_date:'Date',pay_with_paypal:'Pay with PayPal.Me',payment_note:'You will be redirected to PayPal.',seller_notified:'Details sent to seller',check_email_spam:'Check email/spam.',need_help:'Need help?',contact_wa:'Chat on WhatsApp',error_name:'Enter your name',error_phone:'Enter valid phone',error_email:'Invalid email',error_address:'Enter address',error_no_items:'Add at least 1 item',error_select_variant:'Select a variant',item_price:'Item Price',available_stock:'Stock:',pcs:'pcs',kg:'Kg',per_kg:'/Kg',no_size:'One Size',added:'Added to order',order_confirmed:'Order confirmed',sending_data:'Sending data...',digital_product:'Digital Product',from:'from'},
+id:{loading:'Memuat produk...',add_to_order:'Tambah ke Pesanan',select_variant:'Pilih Varian',color:'Warna',size:'Ukuran',quantity:'Jumlah',add_to_list:'Tambah ke Daftar',your_order:'Pesanan Anda',empty_order_hint:'Daftar pesanan masih kosong.',remove:'Hapus',subtotal:'Subtotal',total_weight:'Total Berat',shipping_cost:'Ongkos Kirim',grand_total:'Total Bayar',checkout_now:'Checkout Sekarang',buyer_info:'Informasi Pembeli',full_name:'Nama Lengkap',phone_number:'Nomor WhatsApp',email_optional:'Email (opsional)',shipping_address:'Alamat Pengiriman',order_success:'Pesanan Dibuat',order_success_msg:'Silakan selesaikan pembayaran.',order_id:'ID Pesanan',order_date:'Tanggal',pay_with_paypal:'Bayar via PayPal.Me',payment_note:'Anda akan diarahkan ke PayPal.',seller_notified:'Detail pesanan terkirim ke penjual',check_email_spam:'Cek email/spam.',need_help:'Butuh bantuan?',contact_wa:'Chat di WhatsApp',error_name:'Masukkan nama',error_phone:'Masukkan nomor valid',error_email:'Format email salah',error_address:'Masukkan alamat',error_no_items:'Tambahkan minimal 1 item',error_select_variant:'Pilih varian',item_price:'Harga Item',available_stock:'Stok:',pcs:'pcs',kg:'Kg',per_kg:'/Kg',no_size:'Satu Ukuran',added:'Ditambahkan',order_confirmed:'Pesanan dikonfirmasi',sending_data:'Mengirim data...',digital_product:'Produk Digital',from:'mulai'},
+'es-mx':{loading:'Cargando producto...',add_to_order:'Agregar al Pedido',select_variant:'Seleccionar Variante',color:'Color',size:'Talla',quantity:'Cantidad',add_to_list:'Agregar',your_order:'Tu Pedido',empty_order_hint:'Lista vacia.',remove:'Eliminar',subtotal:'Subtotal',total_weight:'Peso Total',shipping_cost:'Costo de Envio',grand_total:'Total a Pagar',checkout_now:'Proceder al Pago',buyer_info:'Info del Comprador',full_name:'Nombre Completo',phone_number:'Numero WhatsApp',email_optional:'Correo (opcional)',shipping_address:'Direccion de Envio',order_success:'Pedido Realizado',order_success_msg:'Completa el pago.',order_id:'ID del Pedido',order_date:'Fecha',pay_with_paypal:'Pagar con PayPal.Me',payment_note:'Seras redirigido a PayPal.',seller_notified:'Detalles enviados.',check_email_spam:'Revisa correo/spam.',need_help:'Necesitas ayuda?',contact_wa:'Chat en WhatsApp',error_name:'Ingresa tu nombre',error_phone:'Telefono valido',error_email:'Correo invalido',error_address:'Ingresa tu direccion',error_no_items:'Agrega al menos 1 articulo',error_select_variant:'Selecciona una variante',item_price:'Precio',available_stock:'Stock:',pcs:'pzs',kg:'Kg',per_kg:'/Kg',no_size:'Talla Unica',added:'Agregado',order_confirmed:'Pedido confirmado',sending_data:'Enviando datos...',digital_product:'Producto Digital',from:'desde'},
+'pt-br':{loading:'Carregando produto...',add_to_order:'Adicionar ao Pedido',select_variant:'Selecionar Variante',color:'Cor',size:'Tamanho',quantity:'Quantidade',add_to_list:'Adicionar',your_order:'Seu Pedido',empty_order_hint:'Lista vazia.',remove:'Remover',subtotal:'Subtotal',total_weight:'Peso Total',shipping_cost:'Custo de Envio',grand_total:'Total a Pagar',checkout_now:'Finalizar Compra',buyer_info:'Info do Comprador',full_name:'Nome Completo',phone_number:'Numero WhatsApp',email_optional:'E-mail (opcional)',shipping_address:'Endereco de Envio',order_success:'Pedido Realizado',order_success_msg:'Complete o pagamento.',order_id:'ID do Pedido',order_date:'Data',pay_with_paypal:'Pagar com PayPal.Me',payment_note:'Voce sera redirecionado.',seller_notified:'Detalhes enviados.',check_email_spam:'Verifique e-mail/spam.',need_help:'Precisa de ajuda?',contact_wa:'Chat no WhatsApp',error_name:'Insira seu nome',error_phone:'Telefone valido',error_email:'E-mail invalido',error_address:'Insira seu endereco',error_no_items:'Adicione pelo menos 1 item',error_select_variant:'Selecione uma variante',item_price:'Preco',available_stock:'Estoque:',pcs:'un',kg:'Kg',per_kg:'/Kg',no_size:'Tamanho Unico',added:'Adicionado',order_confirmed:'Pedido confirmado',sending_data:'Enviando dados...',digital_product:'Produto Digital',from:'a partir de'},
+it:{loading:'Caricamento prodotto...',add_to_order:'Aggiungi all\'Ordine',select_variant:'Seleziona Variante',color:'Colore',size:'Taglia',quantity:'Quantita',add_to_list:'Aggiungi',your_order:'Il Tuo Ordine',empty_order_hint:'Lista vuota.',remove:'Rimuovi',subtotal:'Subtotale',total_weight:'Peso Totale',shipping_cost:'Costo Spedizione',grand_total:'Totale da Pagare',checkout_now:'Procedi al Pagamento',buyer_info:'Info Acquirente',full_name:'Nome Completo',phone_number:'Numero WhatsApp',email_optional:'Email (opzionale)',shipping_address:'Indirizzo Spedizione',order_success:'Ordine Effettuato',order_success_msg:'Completa il pagamento.',order_id:'ID Ordine',order_date:'Data',pay_with_paypal:'Paga con PayPal.Me',payment_note:'Verrai reindirizzato.',seller_notified:'Dettagli inviati al venditore',check_email_spam:'Controlla email/spam.',need_help:'Hai bisogno di aiuto?',contact_wa:'Chat su WhatsApp',error_name:'Inserisci il nome',error_phone:'Telefono valido',error_email:'Email non valida',error_address:'Inserisci l\'indirizzo',error_no_items:'Aggiungi almeno 1 articolo',error_select_variant:'Seleziona una variante',item_price:'Prezzo',available_stock:'Giacenza:',pcs:'un',kg:'Kg',per_kg:'/Kg',no_size:'Taglia Unica',added:'Aggiunto',order_confirmed:'Ordine confermato',sending_data:'Invio dati...',digital_product:'Prodotto Digitale',from:'da'},
+es:{loading:'Cargando producto...',add_to_order:'Anadir al Pedido',select_variant:'Seleccionar Variante',color:'Color',size:'Talla',quantity:'Cantidad',add_to_list:'Anadir',your_order:'Tu Pedido',empty_order_hint:'Lista vacia.',remove:'Eliminar',subtotal:'Subtotal',total_weight:'Peso Total',shipping_cost:'Gastos de Envio',grand_total:'Total a Pagar',checkout_now:'Tramitar Pedido',buyer_info:'Info del Comprador',full_name:'Nombre Completo',phone_number:'Numero WhatsApp',email_optional:'Correo (opcional)',shipping_address:'Direccion de Envio',order_success:'Pedido Realizado',order_success_msg:'Completa el pago.',order_id:'ID del Pedido',order_date:'Fecha',pay_with_paypal:'Pagar con PayPal.Me',payment_note:'Seras redirigido.',seller_notified:'Detalles enviados.',check_email_spam:'Revisa correo/spam.',need_help:'Necesitas ayuda?',contact_wa:'Chat en WhatsApp',error_name:'Introduce tu nombre',error_phone:'Telefono valido',error_email:'Correo no valido',error_address:'Introduce tu direccion',error_no_items:'Anade al menos 1 articulo',error_select_variant:'Selecciona una variante',item_price:'Precio',available_stock:'Stock:',pcs:'uds',kg:'Kg',per_kg:'/Kg',no_size:'Talla Unica',added:'Anadido',order_confirmed:'Pedido confirmado',sending_data:'Enviando datos...',digital_product:'Producto Digital',from:'desde'},
+de:{loading:'Produkt laden...',add_to_order:'In den Warenkorb',select_variant:'Variante wahlen',color:'Farbe',size:'Grosse',quantity:'Menge',add_to_list:'Hinzufugen',your_order:'Ihre Bestellung',empty_order_hint:'Liste leer.',remove:'Entfernen',subtotal:'Zwischensumme',total_weight:'Gesamtgewicht',shipping_cost:'Versandkosten',grand_total:'Gesamtsumme',checkout_now:'Zur Kasse',buyer_info:'Kauferinformationen',full_name:'Vollstandiger Name',phone_number:'WhatsApp-Nummer',email_optional:'E-Mail (optional)',shipping_address:'Lieferadresse',order_success:'Bestellung aufgegeben',order_success_msg:'Schliessen Sie die Zahlung ab.',order_id:'Bestell-ID',order_date:'Datum',pay_with_paypal:'Mit PayPal.Me bezahlen',payment_note:'Weiterleitung zu PayPal.',seller_notified:'Details gesendet.',check_email_spam:'E-Mail/Spam pruefen.',need_help:'Hilfe benotigt?',contact_wa:'Chat auf WhatsApp',error_name:'Name eingeben',error_phone:'Gultige Nummer',error_email:'Ungultiges Format',error_address:'Adresse eingeben',error_no_items:'Mindestens 1 Artikel',error_select_variant:'Variante wahlen',item_price:'Preis',available_stock:'Bestand:',pcs:'Stk',kg:'Kg',per_kg:'/Kg',no_size:'Einheitsgröße',added:'Hinzugefugt',order_confirmed:'Bestellung bestätigt',sending_data:'Daten senden...',digital_product:'Digitales Produkt',from:'ab'},
+es:{loading:'Cargando producto...',add_to_order:'Anadir al Pedido',select_variant:'Seleccionar Variante',color:'Color',size:'Talla',quantity:'Cantidad',add_to_list:'Anadir',your_order:'Tu Pedido',empty_order_hint:'Lista vacia.',remove:'Eliminar',subtotal:'Subtotal',total_weight:'Peso Total',shipping_cost:'Gastos de Envio',grand_total:'Total a Pagar',checkout_now:'Tramitar Pedido',buyer_info:'Info del Comprador',full_name:'Nombre Completo',phone_number:'Numero WhatsApp',email_optional:'Correo (opcional)',shipping_address:'Direccion de Envio',order_success:'Pedido Realizado',order_success_msg:'Completa el pago.',order_id:'ID del Pedido',order_date:'Fecha',pay_with_paypal:'Pagar con PayPal.Me',payment_note:'Seras redirigido.',seller_notified:'Detalles enviados.',check_email_spam:'Revisa correo/spam.',need_help:'Necesitas ayuda?',contact_wa:'Chat en WhatsApp',error_name:'Introduce tu nombre',error_phone:'Teléfono válido',error_email:'Correo inválido',error_address:'Introduce tu dirección',error_no_items:'Anade al menos 1 artículo',error_select_variant:'Selecciona variante',item_price:'Precio',available_stock:'Stock:',pcs:'uds',kg:'Kg',per_kg:'/Kg',no_size:'Talla Unica',added:'Agregado',order_confirmed:'Pedido confirmado',sending_data:'Enviando datos...',digital_product:'Producto Digital',from:'desde'},
+de:{loading:'Produkt laden...',add_to_order:'In den Warenkorb',select_variant:'Variante wahlen',color:'Farbe',size:'Größe',quantity:'Menge',add_to_list:'Hinzufügen',your_order:'Ihre Bestellung',empty_order_hint:'Liste leer.',remove:'Entfernen',subtotal:'Zwischensumme',total_weight:'Gesamtgewicht',shipping_cost:'Versandkosten',grand_total:'Gesamtsumme',checkout_now:'Zur Kasse',buyer_info:'Kauferinformationen',full_name:'Vollstandiger Name',phone_number:'WhatsApp-Nummer',email_optional:'E-Mail (optional)',shipping_address:'Lieferadresse',order_success:'Bestellung aufgegeben',order_success_msg:'Schliessen Sie die Zahlung ab.',order_id:'Bestell-ID',order_date:'Datum',pay_with_paypal:'Mit PayPal.Me bezahlen',payment_note:'Weiterleitung zu PayPal.',seller_notified:'Details gesendet.',check_email_spam:'E-Mail/Spam prüfen.',need_help:'Hilfe benotigt?',contact_wa:'Chat auf WhatsApp',error_name:'Name eingeben',error_phone:'Gültige Nummer',error_email:'Ungultiges Format',error_address:'Adresse eingeben',error_no_items:'Mindestens 1 Artikel',error_select_variant:'Variante wahlen',item_price:'Preis',available_stock:'Bestand:',pcs:'Stk',kg:'Kg',per_kg:'/Kg',no_size:'Einheitsgröße',added:'Hinzugefügt',order_confirmed:'Bestellung bestätigt',sending_data:'Daten senden...',digital_product:'Digitales Produkt',from:'ab'}
 };
 
+/* ============================================================
+   TELEPON CODES & LANG LABELS
+   ============================================================ */
 var phoneCodes=[
     {code:'+62',flag:'ID'},{code:'+52',flag:'MX'},{code:'+55',flag:'BR'},
     {code:'+39',flag:'IT'},{code:'+34',flag:'ES'},{code:'+49',flag:'DE'},
     {code:'+1',flag:'US'},{code:'+44',flag:'GB'},{code:'+61',flag:'AU'},
     {code:'+33',flag:'FR'},{code:'+81',flag:'JP'},{code:'+1',flag:'CA'}
 ];
-var langLabels={en:'EN',id:'ID','es-mx':'ES-MX','pt-br':'PT-BR',it:'IT',es:'ES',de:'DE'};
+var langLabels={en:'EN',id:'ID','es-mx':'ES-MX','pt-br':'PT-BR',it:'IT',es:'ES-ES',de:'DE'};
 
+/* ============================================================
+   STATE
+   ============================================================ */
 var currentLang=CONFIG.DEFAULT_LANG;
 var activeSheetName=CONFIG.DEFAULT_SHEET;
 var orderItems=[];
@@ -310,7 +345,12 @@ var selectedColor=null,selectedSize=null,currentQty=1;
 var currentOrder=null;
 var activeProduct=JSON.parse(JSON.stringify(CONFIG.product));
 activeProduct.variants=JSON.parse(JSON.stringify(CONFIG.variants));
+var SHEET_CACHE_TTL = 3600000; // 1 jam cache
+var SHEET_CACHE_KEY='nv_prod_';
 
+/* ============================================================
+   HELPERS
+   ============================================================ */
 function t(k){return(i18n[currentLang]&&i18n[currentLang][k])||i18n.en[k]||k}
 function formatPrice(a){try{return new Intl.NumberFormat(currentLang==='de'?'de-DE':currentLang==='id'?'id-ID':'en-US',{style:'currency',currency:CONFIG.CURRENCY_CODE,minimumFractionDigits:2,maximumFractionDigits:2}).format(a)}catch(e){return CONFIG.CURRENCY_CODE+' '+a.toFixed(2)}}
 function formatWeight(kg){return kg.toFixed(2)+' '+t('kg')}
@@ -318,136 +358,259 @@ function generateOrderId(){var n=new Date();return'NV-'+n.getFullYear()+String(n
 function getVariantKey(c,s){return activeProduct.skuMode==='off'?'default':(c||'-')+'|'+(s||'-')}
 function findVariant(c,s){return activeProduct.variants.find(function(v){if(activeProduct.skuMode==='off')return v;return(!c||v.color===c)&&(!s||v.size===s)})}
 function getAvailableStock(c,s){var v=findVariant(c,s);return v?v.stock:0}
-function getUniqueColors(){var m=new Map();activeProduct.variants.forEach(function(v){if(v.color&&!m.has(v.color))m.set(v.color,{code:v.colorCode||'#888',image:v.variantImage||''})});return m}
+function getUniqueColors(){var m=new Map();activeProduct.variants.forEach(function(v){if(v.color&&!m.has(v.color))m.set(v.color,v.colorCode||'#888')});return m}
+function getSizesForColor(c){if(!c)return getUniqueSizes();var s=new Set();activeProduct.variants.forEach(function(v){if(v.color===c&&v.size)s.add(v.size)});return[...s]}
 function getUniqueSizes(){var s=new Set();activeProduct.variants.forEach(function(v){if(v.size)s.add(v.size)});return[...s]}
 function hasColors(){return getUniqueColors().size>0}
-function hasSizes(){return getUniqueSizes().length>0}
 function getRelativeLuminance(hex){if(!hex)return 0;hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];var r=parseInt(hex.substring(0,2),16)/255,g=parseInt(hex.substring(2,4),16)/255,b=parseInt(hex.substring(4,6),16)/255;var l=function(c){return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4)};return 0.2126*l(r)+0.7152*l(g)+0.0722*l(b)}
-function variantImg(url){
-    if(!url)return'';
-    url=url.split('?')[0];
-    return'https://wsrv.nl/?url='+encodeURIComponent(url)+'&w=120&q=75&output=webp';
-}
-function imgC(url,maxW,quality){
-    if(!url||url===''||url.indexOf('data:')===0)return url;
-    if(!CONFIG.COMPRESS_IMAGES)return url;
-    maxW=maxW||800;quality=quality||75;
-    return'https://wsrv.nl/?url='+encodeURIComponent(url)+'&w='+maxW+'&q='+quality+'&output=webp';
-}
-
-function calcShipping(totalWeight){
-    if(totalWeight<=0)return 0;
-    var perKg=activeProduct.shippingCostPerKg;
-    var pct=activeProduct.shipExtraPercent||50;
-    if(totalWeight<=1)return perKg;
-    var extra=totalWeight-1;
-    return perKg+(extra*(pct/100)*perKg);
-}
-
+function calcShipping(tw){if(tw<=0)return 0;var pk=activeProduct.shippingCostPerKg;var pct=activeProduct.shipExtraPercent||50;if(tw<=1)return pk;return pk+((tw-1)*(pct/100)*pk)}
 function showToast(msg,type){type=type||'info';var c=document.getElementById('toastContainer');var el=document.createElement('div');el.className='toast '+type;var icons={success:'fa-circle-check',error:'fa-circle-xmark',info:'fa-circle-info',warning:'fa-triangle-exclamation'};el.innerHTML='<i class="fa-solid '+(icons[type]||icons.info)+'"></i><span>'+msg+'</span>';c.appendChild(el);setTimeout(function(){el.classList.add('removing');setTimeout(function(){el.remove()},300)},3500)}
-
 function setLang(lang){currentLang=lang;document.documentElement.lang=lang;document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');var txt=t(k);if(txt)el.textContent=txt});document.querySelectorAll('[data-i18n-ph]').forEach(function(el){el.placeholder=t(el.getAttribute('data-i18n-ph'))});renderLangBars();renderOrderList();renderPriceHint();if(currentOrder)renderSuccessPage()}
 function renderLangBars(){['langBar','langBarSuccess'].forEach(function(id){var bar=document.getElementById(id);if(!bar)return;bar.innerHTML='';Object.keys(langLabels).forEach(function(code){var btn=document.createElement('button');btn.className='lang-btn'+(code===currentLang?' active':'');btn.textContent=langLabels[code];btn.onclick=function(){setLang(code)};bar.appendChild(btn)})})}
-
 function renderPhoneCodes(){var sel=document.getElementById('inputCountryCode');sel.innerHTML='';phoneCodes.forEach(function(pc){var opt=document.createElement('option');opt.value=pc.code;opt.textContent='+'+pc.code.replace('+','')+' ('+pc.flag+')';sel.appendChild(opt)})}
-
 function applyBgColor(color){if(!color)return;document.documentElement.style.setProperty('--bg',color);document.body.style.background=color;if(getRelativeLuminance(color)>0.4){document.body.classList.add('light-theme')}else{document.body.classList.remove('light-theme')}}
+function injectGTM(id){if(!id)return;window.dataLayer=window.dataLayer||[];(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f)})(window,document,'script','dataLayer',id)})(window,document,'script','dataLayer',id),id)}}
+function injectGA4(id){if(!id)return;window.dataLayer=window.dataLayer||[];var s=document.createElement('script');s.async=true;s.src='https://window.googletagmanager.com/gtag/js?id='+id;document.head.appendChild(s);window.gtag=function(){dataLayer.push(arguments)};window.gtag('js',new Date());window.gtag('config',id)}
+function trackEvent(en,pm){if(window.dataLayer)window.dataLayer.push(Object.assign({event:en},pm));if(window.gtag)window.gtag('event',en,pm);if(CONFIG.APPS_SCRIPT_URL)trackToSheet(en,pm);if(CONFIG.APPS_SCRIPT_URL)trackToSheet(en,pm)}
+function trackToSheet(en,pm){try{fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'trackEvent',sheet:activeSheetName,event:en,orderId:pm.transaction_id||'',itemsCount:pm.value||0,revenue:pm.revenue||pm.value||0,details:JSON.stringify(pm)})}).catch(function(){})}catch(e){}}
 
-function injectGTM(id){if(!id)return;window.dataLayer=window.dataLayer||[];(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f)})(window,document,'script','dataLayer',id)}
-function injectGA4(id){if(!id)return;window.dataLayer=window.dataLayer||[];var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+id;document.head.appendChild(s);window.gtag=function(){dataLayer.push(arguments)};window.gtag('js',new Date());window.gtag('config',id)}
-function trackEvent(eventName,params){if(window.dataLayer)window.dataLayer.push(Object.assign({event:eventName},params));if(window.gtag)window.gtag('event',eventName,params);if(CONFIG.APPS_SCRIPT_URL)trackToSheet(eventName,params)}
-function trackToSheet(eventName,params){try{fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'trackEvent',sheet:activeSheetName,event:eventName,orderId:params.transaction_id||'',itemsCount:params.value||0,revenue:params.revenue||params.value||0,details:JSON.stringify(params)})}).catch(function(){})}catch(e){}}
-function loadSafeImage(url,imgEl){
-    if(!url||url.trim()==='')return;
-    var clean=url.split('?')[0];
-    var proxy='https://wsrv.nl/?url='+encodeURIComponent(clean)+'&w=120&q=75&output=webp';
-    fetch(proxy).then(function(r){
-        if(!r.ok)throw new Error('fail');
-        return r.blob();
-    }).then(function(blob){
-        imgEl.src=URL.createObjectURL(blob);
-    }).catch(function(){
-        imgEl.src=clean;
-    });
-}
-    
+/* ============================================================
+   MODAL VARIANT MODAL — Card UI (tanpa gambar, tanpa proxy, 0 detik load)
+   ============================================================ */
 function openVariantModal(){
     selectedColor=null;selectedSize=null;currentQty=1;
     document.getElementById('qtyDisplay').textContent='1';
     var noSku=activeProduct.skuMode==='off';
     document.getElementById('colorSection').classList.toggle('hidden',noSku||!hasColors());
     document.getElementById('sizeSection').classList.toggle('hidden',noSku||!hasSizes());
+    updateVariantPrice();
+    updateStockHint();
 
     if(hasColors()&&!noSku){
         var c=document.getElementById('colorSwatches');
         c.innerHTML='';
         var colorMap=getUniqueColors();
         colorMap.forEach(function(info,name){
-            var s=document.createElement('button');
+            var colorVars=activeProduct.variants.filter(function(v){return v.color===name});
+            var price=colorVars.length>0?Math.min.apply(null,colorVars.map(function(v){return v.price})):0;
+            var totalStock=colorVars.reduce(function(s,v){return s+v.stock},0);
+            var s=document.createElement('div');
+            s.className='variant-card'+(selectedColor===name?' selected':'');
             s.title=name;
             s.setAttribute('aria-label',name);
             s.onclick=function(){selectColor(name)};
-
-           if(info.image){
-    s.className='swatch';
-    s.style.background=info.code;
-    var img=document.createElement('img');
-    img.alt=name;
-    img.loading='lazy';
-    loadSafeImage(info.image,img);
-    s.appendChild(img);
-}
-
+            s.innerHTML='<div class="variant-dot" style="background:'+info.code+'"></div><div class="variant-info"><div class="variant-name">'+name+'</div><div class="variant-price">'+formatPrice(price)+'</div><div class="variant-stock">'+t('available_stock')+' '+totalStock+' '+t('pcs')+'</div></div>';
+            c.appendChild(s);
+        });
+    }
     if(hasSizes()&&!noSku){
+        var sizes=selectedColor?getSizesForColor(selectedColor):getUniqueSizes();
         var c2=document.getElementById('sizePills');
         c2.innerHTML='';
-        getUniqueSizes().forEach(function(size){
+        sizes.forEach(function(size){
             var p=document.createElement('button');
-            p.className='size-pill';
+            var stock=getAvailableStock(selectedColor,size);
+            p.className='size-pill'+(stock<=0?' disabled':'');
             p.textContent=size;
+            p.setAttribute('aria-label',size);
             p.onclick=function(){selectSize(size)};
             c2.appendChild(p);
         });
     }
-
-    updateVariantPrice();
-    updateStockHint();
-    document.getElementById('modalVariant').classList.add('open');
+    document.getElementById('modalVariantModal').classList.add('open');
     document.body.style.overflow='hidden';
 }
-
 function closeVariantModal(){document.getElementById('modalVariant').classList.remove('open');document.body.style.overflow=''}
-function selectColor(name){selectedColor=name;document.querySelectorAll('#colorSwatches .swatch').forEach(function(s){s.classList.toggle('selected',s.title===name)});if(selectedSize){if(getAvailableStock(selectedColor,selectedSize)<=0){selectedSize=null;document.querySelectorAll('.size-pill').forEach(function(p){p.classList.remove('selected')})}}updateVariantPrice();updateStockHint()}
+function selectColor(name){
+    selectedColor=name;
+    document.querySelectorAll('.variant-card').forEach(function(s){s.classList.toggle('selected',s.title===name});
+    if(hasSizes()&&!activeProduct.skuMode){
+        var sizes=selectedColor?getSizesForColor(name):getUniqueSizes();
+        var c2=document.getElementById('sizePills');
+        c2.innerHTML='';
+        sizes.forEach(function(size){
+            var stock=getAvailableStock(selectedColor,size);
+            var p=document.createElement('button');
+            p.className='size-pill'+(stock<=0?' disabled':'');
+            p.textContent=size;p.setAttribute('aria-label',size);
+            p.onclick=function(){selectSize(size);};
+            c2.appendChild(p);
+        });
+    }
+    if(selectedSize&&getAvailableStock(selectedColor,selectedSize)<=0){
+        selectedSize=null;
+        document.querySelectorAll('.size-pill').forEach(function(p){p.classList.remove('selected')});
+    }
+    updateVariantPrice();updateStockHint();
+}
 function selectSize(size){selectedSize=size;document.querySelectorAll('.size-pill').forEach(function(p){p.classList.toggle('selected',p.textContent===size)});updateVariantPrice();updateStockHint()}
 function changeQty(d){var noSku=activeProduct.skuMode==='off';var maxSt=noSku?999:getAvailableStock(selectedColor,selectedSize);var ek=getVariantKey(selectedColor,selectedSize);var eq=orderItems.filter(function(i){return i.key===ek}).reduce(function(s,i){return s+i.qty},0);currentQty=Math.max(1,Math.min(currentQty+d,Math.max(0,maxSt-eq)));document.getElementById('qtyDisplay').textContent=currentQty;updateVariantPrice()}
-function updateVariantPrice(){var noSku=activeProduct.skuMode==='off';var v=findVariant(selectedColor,selectedSize);var price=noSku?(activeProduct.variants[0]?activeProduct.variants[0].price:0):(v?v.price:0);document.getElementById('variantPrice').textContent=formatPrice(price*currentQty)}
-function updateStockHint(){var noSku=activeProduct.skuMode==='off';if(noSku){document.getElementById('stockHint').textContent='';return}var st=getAvailableStock(selectedColor,selectedSize);var ek=getVariantKey(selectedColor,selectedSize);var eq=orderItems.filter(function(i){return i.key===ek}).reduce(function(s,i){return s+i.qty},0);document.getElementById('stockHint').textContent=t('available_stock')+' '+Math.max(0,st-eq)+' '+t('pcs')}
-function addVariantToOrder(){var noSku=activeProduct.skuMode==='off';if(!noSku){if(hasColors()&&!selectedColor){showToast(t('error_select_variant'),'warning');return}if(hasSizes()&&!selectedSize){showToast(t('error_select_variant'),'warning');return}}var v=findVariant(selectedColor,selectedSize);if(!v&&!noSku){showToast(t('error_select_variant'),'error');return}var key=getVariantKey(selectedColor,selectedSize);var price=noSku?(activeProduct.variants[0]?activeProduct.variants[0].price:0):v.price;var weight=noSku?0:(v.weight||activeProduct.weightPerUnit);var sku=noSku?'':v.sku;var color=noSku?'':(selectedColor||v.color||'');var colorCode=noSku?'':(v.colorCode||'');var size=noSku?'':(selectedSize||v.size||'');var existing=orderItems.find(function(i){return i.key===key});if(existing){existing.qty=Math.min(existing.qty+currentQty,noSku?999:v.stock)}else{orderItems.push({key:key,sku:sku,color:color,colorCode:colorCode,size:size,qty:currentQty,unitPrice:price,weight:weight})}closeVariantModal();renderOrderList();showToast(t('added'),'success');trackEvent('add_to_cart',{item_name:noSku?t('digital_product'):[color,size].filter(Boolean).join(' / '),value:price,currency:CONFIG.CURRENCY_CODE})}
-
-function renderOrderList(){var sec=document.getElementById('orderListSection');var con=document.getElementById('orderItems');var empty=document.getElementById('emptyOrderHint');var tot=document.getElementById('totalsSection');var badge=document.getElementById('orderCount');var btn=document.getElementById('btnCheckout');if(orderItems.length===0){sec.classList.add('hidden');btn.disabled=true;btn.classList.remove('pulse');return}sec.classList.remove('hidden');btn.disabled=false;btn.classList.add('pulse');badge.textContent=orderItems.reduce(function(s,i){return s+i.qty},0)+' '+t('pcs');con.innerHTML='';orderItems.forEach(function(item,idx){var div=document.createElement('div');div.className='order-item flex items-center gap-3 rounded-xl p-3';div.style.background='var(--card-solid,#222)';var dot='';if(item.colorCode){dot='<div class="w-8 h-8 rounded-full flex-shrink-0 border" style="background:'+item.colorCode+';border-color:var(--border)"></div>'}else if(activeProduct.skuMode==='off'){dot='<div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center" style="background:var(--card-solid,#222)"><i class="fa-solid fa-file-lines text-xs" style="color:var(--muted)"></i></div>'}var label=activeProduct.skuMode==='off'?'<span class="text-sm font-semibold">'+t('digital_product')+'</span>':'<span class="text-sm font-semibold">'+[item.color,item.size].filter(Boolean).join(' / ')+'</span>';div.innerHTML=dot+'<div class="flex-1 min-w-0">'+label+'<p class="text-xs" style="color:var(--muted)">'+item.qty+' x '+formatPrice(item.unitPrice)+'</p></div><span class="text-sm font-bold text-gold-400 flex-shrink-0">'+formatPrice(item.qty*item.unitPrice)+'</span><button onclick="removeOrderItem('+idx+')" class="w-7 h-7 rounded-full flex items-center justify-center hover:text-red-400 hover:bg-red-400/10 transition-all flex-shrink-0" style="color:var(--muted)" aria-label="'+t('remove')+'"><i class="fa-solid fa-xmark text-xs"></i></button>';con.appendChild(div)});var subtotal=orderItems.reduce(function(s,i){return s+i.qty*i.unitPrice},0);var totalWeight=orderItems.reduce(function(s,i){return s+i.qty*i.weight},0);var shipC=totalWeight>0?calcShipping(totalWeight):0;var grand=subtotal+shipC;document.getElementById('subtotalVal').textContent=formatPrice(subtotal);document.getElementById('weightVal').textContent=formatWeight(totalWeight);document.getElementById('shippingVal').textContent=shipC>0?formatPrice(shipC):'—';document.getElementById('minKgNote').textContent='';document.getElementById('grandTotalVal').textContent=formatPrice(grand);tot.classList.remove('hidden');empty.classList.add('hidden')}
+function updateVariantPrice(){
+    var price=0;
+    if(noSku){price=activeProduct.variants[0]?activeProduct.variants[0].price:0}
+    else if(selectedColor&&selectedSize){var v=findVariant(selectedColor,selectedSize);price=v?v.price:0}
+    else if(selectedColor){var cv=activeProduct.variants.filter(function(v){return v.color===selectedColor});if(cv.length>0)price=Math.min.apply(null,cv.map(function(v){return v.price}))}
+    document.getElementById('variantPrice').textContent=formatPrice(price*currentQty);
+}
+function updateStockHint(){var noSku=activeProduct.skuMode==='off';if(noSku){document.getElementById('stockHint').textContent='';return}
+    var st=getAvailableStock(selectedColor,selectedSize);var ek=getVariantKey(selectedColor,selectedSize);var eq=orderItems.filter(function(i){return i.key===ek}).reduce(function(s,i){return s+i.qty},0);
+    document.getElementById('stockHint').textContent=t('available_stock')+' '+Math.max(0,st-eq)+' '+t('pcs');
+}
+function addVariantToOrder(){
+    var noSku=activeProduct.skuMode==='off';
+    if(!noSku){if(hasColors()&&!selectedColor){showToast(t('error_select_variant'),'warning');return}
+    if(hasSizes()&&!selectedSize){showToast(t('error_select_variant'),'warning');return}
+    var v=findVariant(selectedColor,selectedSize);
+    if(!v&&!noSku){showToast(t('error_select_variant'),'error');return}
+    var key=getVariantKey(selectedColor,selectedSize);
+    var price=noSku?(activeProduct.variants[0]?activeProduct.variants[0].price:0):v.price;
+    var weight=noSku?0:(v.weight||activeProduct.weightPerUnit);
+    var sku=noSku?'':v.sku;
+    var color=noSku?'':(selectedColor||v.color||''):(v.color||'');
+    var colorCode=noSku?'':(v.colorCode||'');
+    var size=noSku?'':(selectedSize||v.size||'');
+    var existing=orderItems.find(function(i){return i.key===key});
+    if(existing){existing.qty=Math.min(existing.qty+currentQty,noSku?999:v.stock)}
+    else{orderItems.push({key:key,sku:sku,color:colorCode:colorCode,size:size,qty:currentQty,unitPrice:price,weight:weight})}
+    closeVariantModal();renderOrderList();showToast(t('added'),'success');
+    trackEvent('add_to_cart',{item_name:noSku?t('digital_product'):[color,size].filter(Boolean).join(' / '),value:price,currency:CONFIG.CURRENCY_CODE});
+}
+function renderOrderList(){
+    var sec=document.getElementById('orderListSection');var con=document.getElementById('orderItems');var empty=document.getElementById('emptyOrderHint');var tot=document.getElementById('totalsSection');var badge=document.getElementById('orderCount');var btn=document.getElementById('btnCheckout');
+    if(orderItems.length===0){sec.classList.add('hidden');btn.disabled=true;btn.classList.remove('pulse');return}
+    sec.classList.remove('hidden');btn.disabled=false;btn.classList.add('pulse');
+    badge.textContent=orderItems.reduce(function(s,i){return s+i.qty},0)+' '+t('pcs');
+    con.innerHTML='';
+    orderItems.forEach(function(item,idx){
+        var div=document.createElement('div');
+        div.className='order-item flex items-center gap-3 rounded-xl p-3';div.style.background='var(--card-solid,#222)';
+        var dot='';
+        if(item.colorCode){dot='<div class="w-8 h-8 rounded-full flex-shrink-0 border" style="background:'+item.colorCode+';border-color:var(--border)"></div>'}
+        else if(activeProduct.skuMode==='off'){dot='<div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center" style="background:var(--card-solid,#222)"><i class="fa-solid fa-file-lines text-xs" style="color:var(--muted)"></i></div>'}
+        var label=activeProduct.skuMode==='off'?'<span class="text-sm font-semibold">'+t('digital_product')+'</span>':'<span class="text-sm font-semibold">'+[item.color,item.size].filter(Boolean).join(' / ')+'</span>';
+        div.innerHTML=dot+'<div class="flex-1 min-w-0">'+label+'<p class="text-xs" style="color:var(--muted)">'+item.qty+' x '+formatPrice(item.unitPrice)+'</p></div><span class="text-sm font-bold text-gold-400 flex-shrink-0">'+formatPrice(item.qty*item.unitPrice)+'</span><button onclick="removeOrderItem('+idx+')" class="w-7 h-7 rounded-full flex items-center justify-center hover:text-red-400 hover:bg-red-400/10 transition-all flex-shrink-0" style="color:var(--muted)" aria-label="'+t('remove')+'"><i class="fa-solid fa-xmark text-xs"></i></button></div>';
+        con.appendChild(div);
+    });
+    var subtotal=orderItems.reduce(function(s,i){return s+i.qty*i.unitPrice},0);
+    var totalWeight=orderItems.reduce(function(s,i){return s+i.qty*i.weight},0);
+    var shipC=totalWeight>0?calcShipping(totalWeight):0;
+    var grand=subtotal+shipC;
+    document.getElementById('subtotalVal').textContent=formatPrice(subtotal);
+    document.getElementById('weightVal').textContent=formatWeight(totalWeight);
+    document.getElementById('shippingVal').textContent=shipC>0?formatPrice(shipC):'—';
+    document.getElementById('minKgNote').textContent='';
+    document.getElementById('grandTotalVal').textContent=formatPrice(grandTotal);
+    tot.classList.remove('hidden');empty.classList.add('hidden');
+}
 function removeOrderItem(idx){var el=document.querySelectorAll('.order-item')[idx];if(el){el.classList.add('removing');setTimeout(function(){orderItems.splice(idx,1);renderOrderList()},300)}else{orderItems.splice(idx,1);renderOrderList()}}
-function renderPriceHint(){var noSku=activeProduct.skuMode==='off';if(noSku){document.getElementById('priceHint').textContent=formatPrice(activeProduct.variants[0]?activeProduct.variants[0].price:0)}else{var prices=activeProduct.variants.map(function(v){return v.price});var mn=Math.min.apply(null,prices);var mx=Math.max.apply(null,prices);document.getElementById('priceHint').textContent=mn===mx?formatPrice(mn):t('from')+' '+formatPrice(mn)}}
-
-function clearErrors(){['errName','errPhone','errEmail','errAddress'].forEach(function(id){document.getElementById(id).classList.add('hidden')});['inputName','inputPhone','inputEmail','inputAddress'].forEach(function(id){document.getElementById(id).classList.remove('error')})}
+function renderPriceHint(){
+    var noSku=activeProduct.skuMode==='off';
+    if(noSku){document.getElementById('priceHint').textContent=formatPrice(activeProduct.variants[0]?activeProduct.variants[0].price:0);}
+    else{var prices=activeProduct.variants.map(function(v){return v.price});var mn=Math.min.apply(null,prices);var mx=Math.max.apply(null,prices);
+    document.getElementById('priceHint').textContent=mn===mx?formatPrice(mn):t('from')+' '+formatPrice(mn);}
+}
+function clearErrors(){['errName','errPhone','errEmail','errAddress'].forEach(function(id){document.getElementById(id).classList.add('hidden')});['inputName','inputPhone','inputEmail','inputAddress'].forEach(function(id){document.getElementById(id).classList.remove('error');})}
 function showErr(iid,eid){document.getElementById(iid).classList.add('error');document.getElementById(eid).classList.remove('hidden')}
-function validateForm(){clearErrors();var ok=true;var n=document.getElementById('inputName').value.trim();var p=document.getElementById('inputPhone').value.trim();var e=document.getElementById('inputEmail').value.trim();var a=document.getElementById('inputAddress').value.trim();if(!n){showErr('inputName','errName');ok=false}if(!p||p.length<6){showErr('inputPhone','errPhone');ok=false}if(e&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){showErr('inputEmail','errEmail');ok=false}if(!a||a.length<5){showErr('inputAddress','errAddress');ok=false}if(orderItems.length===0){showToast(t('error_no_items'),'error');ok=false}return ok}
-function processCheckout(){if(!validateForm())return;var phoneCode=document.getElementById('inputCountryCode').value;var cm=phoneCodes.find(function(pc){return pc.code===phoneCode});var bc=cm?cm.flag:'unknown';var subtotal=orderItems.reduce(function(s,i){return s+i.qty*i.unitPrice},0);var totalWeight=orderItems.reduce(function(s,i){return s+i.qty*i.weight},0);var shipC=totalWeight>0?calcShipping(totalWeight):0;currentOrder={orderId:generateOrderId(),date:new Date().toISOString(),buyer:{name:document.getElementById('inputName').value.trim(),phone:phoneCode+' '+document.getElementById('inputPhone').value.trim(),email:document.getElementById('inputEmail').value.trim(),country:bc,address:document.getElementById('inputAddress').value.trim()},items:JSON.parse(JSON.stringify(orderItems)),subtotal:subtotal,totalWeight:totalWeight,shippingWeight:totalWeight>0?totalWeight:0,shippingCost:shipC,grandTotal:subtotal+shipC};try{localStorage.setItem('nv_last_order',JSON.stringify(currentOrder))}catch(e){}if(CONFIG.APPS_SCRIPT_URL){saveToSheet(currentOrder,false).catch(function(){})}trackEvent('begin_checkout',{value:currentOrder.grandTotal,currency:CONFIG.CURRENCY_CODE,items:orderItems.length});renderSuccessPage();switchView('viewSuccess');showToast(t('order_confirmed'),'success')}
-
-function renderSuccessPage(){if(!currentOrder)return;document.getElementById('successProductImg').src=imgC(activeProduct.productImage,500,75);document.getElementById('successProductTitle').textContent=activeProduct.title;document.getElementById('successOrderId').textContent=currentOrder.orderId;document.getElementById('successOrderDate').textContent=new Date(currentOrder.date).toLocaleDateString(currentLang==='de'?'de-DE':currentLang==='id'?'id-ID':'en-US',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});var con=document.getElementById('successItems');con.innerHTML='';currentOrder.items.forEach(function(item){var div=document.createElement('div');div.className='flex items-center justify-between text-sm';var label=activeProduct.skuMode==='off'?t('digital_product'):[item.color,item.size].filter(Boolean).join(' / ');div.innerHTML='<div><span class="font-medium">'+label+'</span><span class="ml-2" style="color:var(--muted)">x'+item.qty+'</span></div><span class="font-semibold">'+formatPrice(item.qty*item.unitPrice)+'</span>';con.appendChild(div)});document.getElementById('successSubtotal').textContent=formatPrice(currentOrder.subtotal);document.getElementById('successShipping').textContent=currentOrder.shippingCost>0?formatPrice(currentOrder.shippingCost):'—';document.getElementById('successGrandTotal').textContent=formatPrice(currentOrder.grandTotal);document.getElementById('waSupportLink').href='https://wa.me/'+CONFIG.WA_SUPPORT+'?text='+encodeURIComponent('Halo, pesanan '+currentOrder.orderId);document.getElementById('notifStatus').classList.add('hidden')}
-
-function handlePayPal(){if(!currentOrder)return;var amount=currentOrder.grandTotal.toFixed(2);var paypalUrl='https://paypal.me/'+CONFIG.PAYPAL_ME+'/'+amount+'?currency='+CONFIG.CURRENCY_CODE;showToast(t('sending_data'),'info');if(CONFIG.APPS_SCRIPT_URL){saveToSheet(currentOrder,true).then(function(){window.open(paypalUrl,'_blank');document.getElementById('notifStatus').classList.remove('hidden')}).catch(function(){sendEmailFallback(currentOrder);sendBuyerNotif(currentOrder);window.open(paypalUrl,'_blank');document.getElementById('notifStatus').classList.remove('hidden')})}else{sendEmailFallback(currentOrder);sendBuyerNotif(currentOrder);setTimeout(function(){window.open(paypalUrl,'_blank');document.getElementById('notifStatus').classList.remove('hidden')},600)}trackEvent('purchase',{transaction_id:currentOrder.orderId,value:currentOrder.grandTotal,currency:CONFIG.CURRENCY_CODE,items:currentOrder.items.length})}
-function sendEmailFallback(order){var body='NEW ORDER: '+order.orderId+'\nDate: '+new Date(order.date).toLocaleString()+'\n\nBuyer: '+order.buyer.name+'\nPhone: '+order.buyer.phone+'\nEmail: '+(order.buyer.email||'-')+'\nCountry: '+order.buyer.country+'\nAddress: '+order.buyer.address+'\n\nItems:\n';order.items.forEach(function(item,i){var label=activeProduct.skuMode==='off'?'Digital Product':[item.color,item.size].filter(Boolean).join(' / ');if(item.sku)label+=' ('+item.sku+')';body+=(i+1)+'. '+label+' x'+item.qty+' = '+formatPrice(item.qty*item.unitPrice)+'\n'});body+='\nSubtotal: '+formatPrice(order.subtotal)+'\nShipping: '+formatPrice(order.shippingCost)+'\nTOTAL: '+formatPrice(order.grandTotal)+'\n\nPayment: PayPal.Me';window.open('mailto:'+CONFIG.SELLER_EMAIL+'?subject='+encodeURIComponent('New Order '+order.orderId+' - '+activeProduct.title)+'&body='+encodeURIComponent(body),'_blank')}
+function validateForm(){clearErrors();var ok=true;var n=document.getElementById('inputName').value.trim();var p=document.getElementById('inputPhone').value.trim();var e=document.getElementById('inputEmail').value.trim();var a=document.getElementById('inputAddress').value.trim();
+    if(!n){showErr('inputName','errName');ok=false}
+    if(!p||p.length<6){showErr('inputPhone','errPhone');ok=false}
+    if(e&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){showErr('inputEmail','errEmail');ok=false}
+    if(!a||a.length<5){showErr('inputAddress','errAddress');ok=false}
+    if(orderItems.length===0){showToast(t('error_no_items'),'error');ok=false}
+    return ok;
+}
+function processCheckout(){if(!validateForm())return;
+    var phoneCode=document.getElementById('inputCountryCode').value;
+    var cm=phoneCodes.find(function(pc){return pc.code===phoneCode});var bc=cm?cm.flag:'unknown';
+    var subtotal=orderItems.reduce(function(s,i){return s+i.qty*i.unitPrice},0);
+    var totalWeight=orderItems.reduce(function(s,i){return s+i.qty*i.weight},0);
+    var shipW=totalWeight>0?calcShipping(totalWeight):0;
+    currentOrder={orderId:generateOrderId(),date:new Date().toISOString(),buyer:{name:document.getElementById('inputName').value.trim(),phone:phoneCode+' '+document.getElementById('inputPhone').value.trim(),email:document.getElementById('inputEmail').value.trim(),country:bc,address:document.getElementById('inputAddress').value.trim()},items:JSON.parse(JSON.stringify(orderItems)),subtotal:subtotal,totalWeight:totalWeight,shippingWeight:totalWeight>0,shippingCost:shipC,grandTotal:subtotal+shipC};
+    try{localStorage.setItem('nv_last_order',JSON.stringify(currentOrder))}catch(e){}
+    if(CONFIG.APPS_SCRIPT_URL){saveToSheet(currentOrder,false).catch(function(){})}
+    trackEvent('begin_checkout',{value:currentOrder.grandTotal,currency:CONFIG.CURRENCY_CODE,items:orderItems.length});
+    renderSuccessPage();switchView('viewSuccess');showToast(t('order_confirmed'),'success');
+}
+function renderSuccessPage(){
+    if(!currentOrder)return;
+    document.getElementById('successProductImg').src=activeProduct.productImage;
+    document.getElementById('successProductTitle').textContent=activeProduct.title;
+    document.getElementById('successOrderId').textContent=currentOrder.orderId;
+    document.getElementById('successOrderDate').textContent=new Date(currentOrder.date).toLocaleDateString(currentLang==='de'?'de-DE':currentLang==='id'?'id-ID':'en-US':{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    var con=document.getElementById('successItems');con.innerHTML='';
+    currentOrder.items.forEach(function(item){
+        var div=document.createElement('div');div.className='flex items-center justify-between text-sm';
+        var label=activeProduct.skuMode==='off'?t('digital_product'):[item.color,item.size].filter(Boolean).join(' / ')]:[item.color,item.size].filter(Boolean).join(' / ')+'</div>';
+        div.innerHTML='<div><span class="font-medium">'+label+'</span><span class="ml-2" style="color:var(--muted)">x'+item.qty+'</span></div><span class="font-semibold">'+formatPrice(item.qty*item.unitPrice)+'</span></div>';
+        con.appendChild(div);
+    });
+    document.getElementById('successSubtotal').textContent=formatPrice(currentOrder.subtotal);
+    document.getElementById('successShipping').textContent=currentOrder.shippingCost>0?formatPrice(currentOrder.shippingCost):'—';
+    document.getElementById('successGrandTotal').textContent=formatPrice(currentOrder.grandTotal);
+    document.getElementById('waSupportLink').href='https://wa.me/'+CONFIG.WA_SUPPORT+'?text='+encodeURIComponent('Halo, pesanan '+currentOrder.orderId);
+    document.getElementById('notifStatus').classList.add('hidden');
+}
+function handlePayPal(){
+    if(!currentOrder)return;
+    var amount=currentOrder.grandTotal.toFixed(2);
+    var paypalUrl='https://paypal.me/'+CONFIG.PAYPAL_ME+'/'+amount+'?currency='+CONFIG.CURRENCY_CODE;
+    showToast(t('sending_data'),'info');
+    if(CONFIG.APPS_SCRIPT_URL){
+        saveToSheet(currentOrder,true).then(function(){window.open(paypalUrl,'_blank');document.getElementById('notifStatus').classList.remove('hidden')}).catch(function(){sendEmailFallback(currentOrder);sendBuyerNotif(currentOrder);setTimeout(function(){window.open(paypalUrl,'_blank');document.getElementById('notifStatus').classList.remove('hidden')},600)}
+    } else{sendEmailFallback(currentOrder);sendBuyerNotif(currentOrder);setTimeout(function(){window.open(paypalUrl,'_blank');document.getElementById('notifStatus').classList.remove('hidden')},600)}
+    trackEvent('purchase',{transaction_id:currentOrder.orderId,value:currentOrder.grandTotal,currency:CONFIG.CURRENCY_CODE,items:currentOrder.items.length});
+}
+function sendEmailFallback(order){
+    var body='NEW ORDER: '+order.orderId+'\nDate: '+new Date(order.date).toLocaleString()+'\n\nBuyer: '+order.buyer.name+'\nPhone: '+order.buyer.phone+'\nEmail: '+(order.buyer.email||'-')+'\nCountry: '+order.buyer.country+'\nAddress: '+order.buyer.address+'\n\nItems:\n';
+    order.items.forEach(function(item,i){var label=activeProduct.skuMode==='off'?'Digital Product':[item.color,item.size].filter(Boolean).join(' / ');if(item.sku)label+=' ('+item.sku+')';body+=(i+1)+'. '+label+' x'+item.qty+' = '+formatPrice(item.qty*item.unitPrice)+'\n'});
+    body+='\nSubtotal: '+formatPrice(order.subtotal)+'\nShipping: '+formatPrice(order.shippingCost)+'\nTOTAL: '+formatPrice(order.grandTotal)+'\n\nPayment: PayPal.Me';
+    window.open('mailto:'+CONFIG.SELLER_EMAIL+'?subject='+encodeURIComponent('New Order '+order.orderId+' - '+activeProduct.title)+'&body='+encodeURIComponent(body),'_blank');
+}
 function sendBuyerNotif(order){if(!order.buyer.phone)return;var phone=order.buyer.phone.replace(/[^0-9]/g,'');if(phone.length>=8){window.open('https://wa.me/'+phone+'?text='+encodeURIComponent('Thank you!\n\nOrder: '+order.orderId+'\nTotal: '+formatPrice(order.grandTotal)+'\n\nPlease complete payment via PayPal.Me.'),'_blank')}}
-
-function loadFromSheet(){if(!CONFIG.APPS_SCRIPT_URL)return Promise.resolve();return fetch(CONFIG.APPS_SCRIPT_URL+'?action=read&sheet='+encodeURIComponent(activeSheetName)).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(function(data){if(data.success&&data.product){var p=data.product;activeProduct.skuMode=p.skuMode||'on';activeProduct.weightPerUnit=Number(p.weightPerUnit)||0.3;activeProduct.shippingCostPerKg=Number(p.shippingCostPerKg)||12;activeProduct.shipExtraPercent=Number(p.shipExtraPercent)||50;activeProduct.title=p.name||activeProduct.title;activeProduct.description=p.description||activeProduct.description;activeProduct.bannerImage=p.bannerImage||activeProduct.bannerImage;activeProduct.productImage=p.productImage||activeProduct.productImage;activeProduct.footerImage=p.footerImage||activeProduct.footerImage;activeProduct.variants=data.variants||activeProduct.variants;if(p.bgColor)applyBgColor(p.bgColor);if(p.gtmId)injectGTM(p.gtmId);if(p.ga4Id)injectGA4(p.ga4Id);if(p.currency){CONFIG.CURRENCY=p.currency;CONFIG.CURRENCY_CODE=p.currency}if(activeProduct.skuMode==='off'&&activeProduct.variants.length===0){activeProduct.variants=[{sku:'',color:'',colorCode:'',size:'',stock:999,hpp:0,price:Number(p.sellingPrice)||0,weight:0,variantImage:''}]}applyProductToDOM();showToast('Product loaded','success')}}).catch(function(e){console.warn('Sheet load failed:',e);applyProductToDOM()})}
-function applyProductToDOM(){document.getElementById('bannerImg').src=imgC(activeProduct.bannerImage,800,70);document.getElementById('footerImg').src=imgC(activeProduct.footerImage,800,70);document.getElementById('productTitle').textContent=activeProduct.title;document.getElementById('productDesc').textContent=activeProduct.description;renderPriceHint()}
+function saveToSheet(order,sendEmails){return fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:sendEmails?'saveAndNotify':'save',sheet:activeSheetName,order:order,sellerEmail:CONFIG.SELLER_EMAIL,productTitle:activeProduct.title})}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(function(d){if(!d.success)throw new Error(d.error||'Error');return d})}).catch(function(){})}
+function loadFromSheet(){
+    var cacheKey=SHEET_CACHE_KEY+activeSheetName;
+    var cached=null;
+    try{var raw=localStorage.getItem(cacheKey);if(raw)cached=JSON.parse(raw)}catch(e){localStorage.removeItem(cacheKey)}
+    if(cached&&cached.sheet===activeSheetName&&(Date.now()-cached.ts<SHEET_CACHE_TTL){applyProductFromData(cached.data);hideLoading();if(CONFIG.APPS_SCRIPT_URL){fetch(CONFIG.APPS_SCRIPT_URL+'?action=read&sheet='+encodeURIComponent(activeSheetName)).then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(data){if(data.success&&data.product){localStorage.setItem(cacheKey,JSON.stringify({sheet:activeSheetName,ts:Date.now(),data:data}));applyProductFromData(data)}}).catch(function(){})}
+    }else{applyProductFromData({product:JSON.parse(JSON.stringify(activeProduct)),variants:activeProduct.variants})}
+    .catch(function(e){console.warn('Sheet load failed:',e);applyProductFromData({product:JSON.parse(JSON.stringify(activeProduct)),variants:activeProduct.variants})}}
+}
+function applyProductFromData(data){
+    var p=data.product;
+    activeProduct.skuMode=p.skuMode||'on';
+    activeProduct.weightPerUnit=Number(p.weightPerUnit)||0.3;
+    activeProduct.shippingCostPerKg=Number(p.shippingCostPerKg)||12;
+    activeProduct.shipExtraPercent=Number(p.shipExtraPercent)||50;
+    activeProduct.title=p.name||activeProduct.title;
+    activeProduct.description=p.description||activeProduct.description;
+    activeProduct.bannerImage=p.bannerImage||activeProduct.bannerImage;
+    activeProduct.productImage=p.productImage||activeProduct.productImage;
+    activeProduct.footerImage=p.footerImage||activeProduct.footerImage;
+    activeProduct.variants=data.variants||activeProduct.variants;
+    if(p.bgColor)applyBgColor(p.bgColor);
+    if(p.gtmId)injectGTM(p.gtmId);
+    if(p.ga4Id)injectGA4(p.ga4Id);
+    if(p.currency){CONFIG.CURRENCY=p.currency;CONFIG.CURRENCY_CODE=p.currency}
+    if(activeProduct.skuMode==='off'&&activeProduct.variants.length===0){activeProduct.variants=[{sku:'',color:'',colorCode:'',size:'',stock:999,hpp:0,price:Number(p.sellingPrice)||0,weight:0,variantImage:''}]}
+    applyProductToDOM();
+}
+function applyProductToDOM(){
+    document.getElementById('bannerImg').src=activeProduct.bannerImage;
+    document.getElementById('footerImg').src=activeProduct.footerImage;
+    document.getElementById('productTitle').textContent=activeProduct.title;
+    document.getElementById('productDesc').textContent=activeProduct.description;
+    renderPriceHint();
+}
 function saveToSheet(order,sendEmails){return fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:sendEmails?'saveAndNotify':'save',sheet:activeSheetName,order:order,sellerEmail:CONFIG.SELLER_EMAIL,productTitle:activeProduct.title})}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(function(d){if(!d.success)throw new Error(d.error||'Error');return d})}
-
+}
 function switchView(id){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
 function hideLoading(){var el=document.getElementById('loadingScreen');if(!el)return;el.style.opacity='0';el.style.transition='opacity 0.4s ease';setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},400);document.getElementById('viewOrder').classList.add('active')}
-
 function initTextarea(){document.getElementById('inputAddress').addEventListener('input',function(){this.style.height='auto';this.style.height=this.scrollHeight+'px'})}
 
+/* ============================================================
+   INIT
+   ============================================================ */
 function init(){
     var params=new URLSearchParams(window.location.search);
     if(params.get('sheet'))activeSheetName=decodeURIComponent(params.get('sheet'));
@@ -458,13 +621,13 @@ function init(){
     document.getElementById('inputEmail').setAttribute('data-i18n-ph','email_optional');
     document.getElementById('inputAddress').setAttribute('data-i18n-ph','shipping_address');
     setLang(currentLang);
-    if(!params.get('lang')){var bl=navigator.language||'';var map={'id':'id','en':'en','es-MX':'es-mx','pt-BR':'pt-br','it':'it','es':'es','de':'de'};var m=map[bl]||map[bl.substring(0,2)];if(m)setLang(m)}
+    if(!params.get('lang')){var bl=navigator.language||'';var map={'id':'id','en':'en','es-mx':'es-mx','pt-br':'pt-br','it':'it','es':'es','de':'de'};
+    var m=map[bl]||map[bl.substring(0,2)];if(m)setLang(m);
     if(CONFIG.bgColor)applyBgColor(CONFIG.bgColor);
     if(CONFIG.gtmId)injectGTM(CONFIG.gtmId);
     if(CONFIG.ga4Id)injectGA4(CONFIG.ga4Id);
-    var timeout=setTimeout(function(){hideLoading()},6000);
-    if(CONFIG.APPS_SCRIPT_URL){loadFromSheet().then(function(){clearTimeout(timeout);hideLoading()}).catch(function(){clearTimeout(timeout);hideLoading()})}else{applyProductToDOM();clearTimeout(timeout);hideLoading()}
-    trackEvent('page_view',{page_title:activeProduct.title,page_location:window.location.href});
+    // Preload dari cache jika ada & masih valid (1 jam)
+    loadFromSheet();
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
