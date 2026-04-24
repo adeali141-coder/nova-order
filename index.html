@@ -100,6 +100,11 @@
         .btn-p:active{transform:scale(.98)}
         .btn-p:disabled{opacity:.35;cursor:not-allowed;transform:none}
 
+        .btn-complete{width:100%;padding:12px 20px;background:#2563eb;color:#fff;font-size:14px;font-weight:700;
+            border:none;border-radius:11px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+        .btn-complete:hover{background:#1d4ed8}
+        .btn-complete:active{transform:scale(.98)}
+
         .rm-btn{width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:transparent;
             border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;transition:all .2s;font-size:10px;flex-shrink:0}
         .rm-btn:hover{background:rgba(248,113,113,.1);border-color:var(--error);color:var(--error)}
@@ -219,15 +224,24 @@
     <div id="footer-section" class="hidden"><img id="footer-img" src="" alt="" style="width:100%;max-height:120px;object-fit:cover;opacity:.4"></div>
 </div>
 
+<!-- ===== MODAL SUKSES — font teks konfirmasi ikut Card Text ===== -->
 <div id="success-modal" class="modal-ov">
     <div class="modal-ct">
-        <div class="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style="background:rgba(52,211,153,.15)">
+        <div class="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-content-center" style="background:rgba(52,211,153,.15)">
             <i class="fas fa-check text-lg" style="color:var(--success)"></i>
         </div>
         <h2 class="text-lg font-bold mb-1">Order Placed</h2>
-        <p id="modal-oid" class="text-xs mb-1" style="color:var(--muted)"></p>
+        <p id="modal-oid" class="text-xs mb-1" style="color:var(--fg)"></p>
         <p id="modal-total" class="text-lg font-bold mb-4" style="color:var(--accent)"></p>
+
+        <!-- FIX: warna font teks konfirmasi ikut Card Text, bukan muted -->
         <p class="text-xs mb-4" style="color:var(--fg);line-height:1.5">Complete payment via the PayPal link.<br>Confirmation email has been sent.</p>
+
+        <!-- FIX: tombol Complete Payment yang buka PayPal, bukan redirect otomatis -->
+        <button id="complete-pay-btn" class="btn-complete" style="display:none;margin-bottom:8px" onclick="completePayment()">
+            <i class="fab fa-paypal mr-2"></i>Complete Payment
+        </button>
+
         <button class="btn-p" id="modal-close" style="width:auto;display:inline-block;padding:10px 32px;font-size:13px">Done</button>
     </div>
 </div>
@@ -235,21 +249,31 @@
 <div id="toast" class="toast"></div>
 
 <script>
+// =============================================
+// KONFIGURASI
+// =============================================
+
+// >>> GANTI dengan link PayPal.Me yang benar jika sudah ada <<<
+// Format: 'https://paypal.me/nama-toko/jumlah-mata-uang'
+// Contoh: 'https://paypal.me/novavariety/25USD'
+// Kalau belum punya link PayPal.Me, biarkan kosong seperti di bawah agar
+// form tidak redirect ke halaman login PayPal
 const CFG = {
     SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzpj6MdFIKB3NviKkZ-AQhkEUKY_Utxdga6COXsyPadqBOUZdnXhZ-lMCEzvYN630UyQg/exec',
     SELLER_EMAIL: 'novavariety@gmail.com',
-    PAYPAL_ME: 'https://www.paypal.com/paypalme/my/profile'
+    PAYPAL_ME: ''  // ← GANTI di sini kalau sudah punya link PayPal.Me
 };
+
 const COUNTRIES = ['United States','United Kingdom','Canada','Australia','Germany','France','Netherlands','Italy','Spain','Japan','South Korea','Singapore','Malaysia','Thailand','Philippines','Indonesia','India','Saudi Arabia','UAE','Brazil','Mexico','New Zealand','Sweden','Switzerland','Belgium','Poland','Portugal','Ireland','Turkey','South Africa','Nigeria','Argentina','Chile','Vietnam','Hong Kong','Taiwan','Pakistan','Bangladesh','Myanmar','Cambodia','Russia','Egypt','Colombia','Peru','Kenya'];
 
-let product = null, variants = [], cart = [];
+let product = null, variants = [], cart = [], lastOrderId = '';
 const SHEET = new URLSearchParams(window.location.search).get('sheet') || 'Long_Sleeve';
 
 document.addEventListener('DOMContentLoaded', () => {
     const sel = document.getElementById('f-country');
     COUNTRIES.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
     document.getElementById('submit-btn').addEventListener('click', submitOrder);
-    document.getElementById('modal-close').addEventListener('click', () => document.getElementById('success-modal').classList.remove('show'));
+    document.getElementById('modal-close').addEventListener('click', closeModal);
     document.getElementById('desc-btn').addEventListener('click', toggleDesc);
 
     const vc = document.getElementById('variant-cards');
@@ -292,6 +316,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function cardMax(card) { const s = parseInt(card.dataset.selStock); return (s && s > 0) ? s : 999; }
 
+// =============================================
+// FIX IMG URL — GitHub & Google Drive auto-fix
+// =============================================
 function fixImg(url) {
     if (!url || typeof url !== 'string') return '';
     url = url.trim();
@@ -301,6 +328,9 @@ function fixImg(url) {
     return url;
 }
 
+// =============================================
+// Hex → RGBA helpers
+// =============================================
 function hexToRgba(hex, a) {
     if (!hex || hex.length < 4) return '';
     hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
@@ -318,7 +348,7 @@ function applyCardBg(card, code) {
 function deriveBorder(hex) {
     if (!hex || hex.length < 4) return '';
     hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
-    const r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+    const r=parseInt(hex.substring(0,2),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
     if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
     return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.12)':'rgba(255,255,255,0.08)';
 }
@@ -326,7 +356,7 @@ function deriveBorder(hex) {
 function deriveSurface(hex) {
     if (!hex || hex.length < 4) return '';
     hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
-    const r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+    const r=parseInt(hex.substring(0,2),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
     if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
     return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.04)';
 }
@@ -334,7 +364,7 @@ function deriveSurface(hex) {
 function deriveMuted(hex) {
     if (!hex || hex.length < 4) return '';
     hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
-    const r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+    const r=parseInt(hex.substring(0,2),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
     if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
     return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.5)':'rgba(255,255,255,0.5)';
 }
@@ -342,11 +372,14 @@ function deriveMuted(hex) {
 function deriveBorderHover(hex) {
     if (!hex || hex.length < 4) return '';
     hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
-    const r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+    const r=parseInt(hex.substring(0,2),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
     if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
     return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.22)':'rgba(255,255,255,0.15)';
 }
 
+// =============================================
+// Fetch Product
+// =============================================
 async function fetchProduct() {
     const st = document.getElementById('loader-status');
     try {
@@ -408,6 +441,9 @@ async function testConnection() {
     d.innerHTML=r.map(x=>'<p style="font-size:10px;color:var(--muted);margin-bottom:2px">'+x+'</p>').join('');
 }
 
+// =============================================
+// Render
+// =============================================
 function renderProduct() {
     const be = document.getElementById('banner-img');
     if(product.bannerImage){be.src=fixImg(product.bannerImage);be.style.display='block';}
@@ -425,6 +461,9 @@ function renderProduct() {
 
 function toggleDesc(){const b=document.getElementById('desc-btn'),m=document.getElementById('desc-more');if(b.dataset.open==='0'){m.classList.remove('hidden');b.textContent='Show less';b.dataset.open='1';}else{m.classList.add('hidden');b.textContent='Read more';b.dataset.open='0';}}
 
+// =============================================
+// VARIANT CARDS
+// =============================================
 function renderVariantCards() {
     const c = document.getElementById('variant-cards'); c.innerHTML = '';
     if(product.skuMode==='off'){document.getElementById('variant-section').classList.add('hidden');return;}
@@ -484,7 +523,7 @@ function renderSizeOnly(container) {
     card.dataset.color=''; card.dataset.colorcode='';
     const prices=variants.map(v=>Number(v.price)).filter(p=>p>0);
     const mn=prices.length?Math.min(...prices):Number(product.sellingPrice)||0, mx=prices.length?Math.max(...prices):mn, showP=mn!==mx;
-    const img=fixImg(product.productImage||(variants.find(v=>v.variantImage)||{}).variantImage||'');
+    const img=fixImg(product.productImage||(variants.find(v=>v.variantImage)||{}).variantImage||'';
     let h='<div class="size-only-head">Select Size</div>';
     if(img) h+='<div class="card-img"><img src="'+img+'" alt="Product" loading="lazy"></div>';
     h+='<div class="card-sizes">';
@@ -503,6 +542,9 @@ function groupByColor() {
     return m;
 }
 
+// =============================================
+// Add from Card
+// =============================================
 function addFromCard(card) {
     const hasPills = card.querySelectorAll('.sz-pill').length > 0;
     if(hasPills && !card.dataset.selSku){card.classList.add('shake');setTimeout(()=>card.classList.remove('shake'),400);showToast('Select a size first','err');return;}
@@ -520,13 +562,16 @@ function addFromCard(card) {
     renderCart(); showToast('Added to order','ok');
 }
 
+// =============================================
+// Cart
+// =============================================
 function removeFromCart(i){cart.splice(i,1);renderCart();}
 function renderCart() {
     const em=document.getElementById('cart-empty'),it=document.getElementById('cart-items'),to=document.getElementById('cart-totals'),sb=document.getElementById('submit-btn');
     if(!cart.length){em.classList.remove('hidden');it.classList.add('hidden');to.classList.add('hidden');sb.disabled=true;return;}
     em.classList.add('hidden');it.classList.remove('hidden');to.classList.remove('hidden');sb.disabled=false;
     const cur=product.currency||'USD';let h='',sub=0,tw=0;
-    cart.forEach((item,i)=>{const t=item.unitPrice*item.qty;sub+=t;tw+=item.weight*item.qty;const lb=[item.color,item.size].filter(Boolean).join(' / ')||'Product';const lf=item.sku?lb+' ('+item.sku+')':lb;h+='<div class="cart-enter flex items-center gap-2 p-2 rounded-lg" style="background:var(--surface)">'+(item.variantImage?'<img src="'+fixImg(item.variantImage)+'" class="w-9 h-9 rounded-lg object-cover flex-shrink-0" style="background:var(--card)" alt="">':'')+'<div class="flex-1 min-w-0"><p class="text-xs font-semibold truncate">'+esc(lf)+'</p><p style="color:var(--muted);font-size:10px">'+fmtPrice(item.unitPrice,cur)+' x '+item.qty+'</p></div><div class="flex items-center gap-1 flex-shrink-0"><span class="text-xs font-bold">'+fmtPrice(t,cur)+'</span><button class="rm-btn" onclick="removeFromCart('+i+')" aria-label="Remove"><i class="fas fa-times"></i></button></div></div>';});
+    cart.forEach((item,i)=>{const t=item.unitPrice*item.qty;sub+=t;tw+=item.weight*item.qty;const lb=[item.color,item.size].filter(Boolean).join(' / ')||'Product';const lf=item.sku?lb+' ('+item.sku+')':lb;h+='<div class="cart-enter flex items-center gap-2 p-2 rounded-lg" style="background:var(--surface)">'+(item.variantImage?'<img src="'+fixImg(item.variantImage)+'" class="w-9 h-9 rounded-lg object-cover flex-shrink-0" style="background:var(--card)" alt="">':'')+'<div class="flex-1 min-w-0"><p class="text-xs font-semibold truncate">'+esc(lf)+'</p><p style="color:var(--muted);font-size:10px">'+fmtPrice(item.unitPrice,cur)+' x '+item.qty+'</p></div><div class="flex items-center gap-1 flex-shrink-0"><span class="text-xs font-bold">'+fmtPrice(t,cur)+'</span><button class="rm-btn" onclick="removeFromCart('+i+')" aria-label="Remove"><i class="fas fa-times"></i></button></div></div></div>';});
     it.innerHTML=h;
     const sk=Number(product.shippingCostPerKg)||0,se=Number(product.shipExtraPercent)||0;
     let sc=(sk>0&&tw>0)?tw*sk*(1+se/100):0;const gr=sub+sc;
@@ -535,6 +580,9 @@ function renderCart() {
     document.getElementById('t-total').textContent=fmtPrice(gr,cur);
 }
 
+// =============================================
+// Submit Order — FIX: redirect ke PayPal HANYA setelah modal sukses muncul
+// =============================================
 async function submitOrder() {
     const n=document.getElementById('f-name').value.trim(),ph=document.getElementById('f-phone').value.trim(),
           em=document.getElementById('f-email').value.trim(),co=document.getElementById('f-country').value,
@@ -545,8 +593,9 @@ async function submitOrder() {
     const cur=product.currency||'USD',sub=cart.reduce((s,i)=>s+i.unitPrice*i.qty,0),
           tw=cart.reduce((s,i)=>s+i.weight*i.qty,0),sk=Number(product.shippingCostPerKg)||0,se=Number(product.shipExtraPercent)||0,
           sc=(sk>0&&tw>0)?tw*sk*(1+se/100):0,gt=sub+sc,
-          oid='NV-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substring(2,5).toUpperCase(),
-          order={orderId:oid,date:new Date().toISOString(),buyer:{name:n,phone:ph,email:em,country:co,address:ad},
+          oid='NV-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substring(2,5).toUpperCase();
+    lastOrderId = oid;
+    const order={orderId:oid,date:new Date().toISOString(),buyer:{name:n,phone:ph,email:em,country:co,address:ad},
           items:cart.map(i=>({sku:i.sku,color:i.color,size:i.size,qty:i.qty,unitPrice:i.unitPrice,weight:i.weight})),
           subtotal:sub,shippingWeight:Math.round(tw*1000)/1000,shippingCost:Math.round(sc*100)/100,grandTotal:Math.round(gt*100)/100};
     const btn=document.getElementById('submit-btn');btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i>Processing...';
@@ -554,18 +603,65 @@ async function submitOrder() {
         const r=await fetch(CFG.SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'saveAndNotify',sheet:SHEET,order,sellerEmail:CFG.SELLER_EMAIL,productTitle:product.name||'Product'})});
         const tx=await r.text();let d;try{d=JSON.parse(tx);}catch{throw new Error('Invalid: '+tx.substring(0,150));}
         if(!d.success)throw new Error(d.error||'Server error');
+
+        // Track event
         fetch(CFG.SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'trackEvent',sheet:SHEET,event:'purchase',orderId:oid,itemsCount:cart.length,revenue:gt,details:'Order by '+n})}).catch(()=>{});
+
+        // TAMPILKAN MODAL SUKSES — pastikan tampil dulu, JANGAN redirect otomatis
         document.getElementById('modal-oid').textContent='Order ID: '+oid;
         document.getElementById('modal-total').textContent=fmtPrice(gt,cur);
-        document.getElementById('success-modal').classList.add('show');
-        cart=[];renderCart();document.getElementById('buyer-form').reset();
-        document.querySelectorAll('#variant-cards .variant-card.selected').forEach(c=>c.classList.remove('selected'));
-        document.querySelectorAll('#variant-cards .sz-pill.sel').forEach(p=>p.classList.remove('sel'));
-        if(CFG.PAYPAL_ME){window.open(CFG.PAYPAL_ME.endsWith('/')?CFG.PAYPAL_ME+gt.toFixed(2):CFG.PAYPAL_ME+'/'+gt.toFixed(2),'_blank');}
-    }catch(e){console.error(e);showToast('Failed: '+e.message,'err');}
-    finally{btn.disabled=cart.length===0;btn.innerHTML='<i class="fas fa-lock mr-1.5" style="font-size:12px"></i>Place Order';}
+        showSuccessModal();
+
+        // JIKA PAYPAL_ME diisi, tampilkan tombol Complete Payment
+        if(CFG.PAYPAL_ME){
+            document.getElementById('complete-pay-btn').style.display='inline-block';
+        }else{
+            document.getElementById('complete-pay-btn').style.display='none';
+        }
+    }catch(e){
+        console.error(e);showToast('Failed: '+e.message,'err');
+    }finally{
+        btn.disabled=cart.length===0;
+        btn.innerHTML='<i class="fas fa-lock mr-1.5" style="font-size:12px"></i>Place Order';
+    }
 }
 
+// =============================================
+// Close modal — JIKA PayPal.Me kosong → langsung tutup, JIKA ada → buka PayPal dulu baru tutup
+// =============================================
+function closeModal() {
+    document.getElementById('success-modal').classList.remove('show');
+
+    // JI PAYPAL_ME diisi → buka PayPal di tab baru, LALU tutup modal dulu
+    if(CFG.PAYPAL_ME) {
+        var url = CFG.PAYPAL_ME;
+        // Pastikan ada / di akhir URL
+        if (url.indexOf('/paypal.me/') !== -1 && url.indexOf('/paypal.me/') !== -1 && url.indexOf('/') !== -1 && !url.endsWith('/')) url += '/';
+        window.open(url, '_blank');
+    }
+}
+
+// =============================================
+// Tombol Complete Payment — dipanggil dari dalam modal
+// =============================================
+function completePayment() {
+    if(!CFG.PAYPAL_ME){return;}
+    var url = CFG.PAYPAL_ME;
+    if (url.indexOf('/paypal.me/') !== -1 && url.indexOf('/paypal.me/') !== -1 && url.indexOf('/') !== -1 && !url.endsWith('/')) url += '/';
+    window.open(url, '_blank');
+}
+
+// =============================================
+// Tampilkan modal sukses
+// =============================================
+function showSuccessModal() {
+    document.getElementById('success-modal').classList.add('show');
+    document.getElementById('complete-pay-btn').style.display = CFG.PAYPAL_ME ? 'inline-block' : 'none';
+}
+
+// =============================================
+// Utilities
+// =============================================
 function fmtPrice(v,c){const cc=c||product.currency||'USD',n=Number(v)||0;try{return new Intl.NumberFormat('en-US',{style:'currency',currency:cc,minimumFractionDigits:0,maximumFractionDigits:2}).format(n);}catch{return cc+' '+n.toFixed(2);}}
 function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 let tt=null;
