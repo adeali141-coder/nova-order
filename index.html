@@ -9,24 +9,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg:#111111;--surface:#1a1a1c;--card:#222225;
-            --fg:#f0ebe3;--muted:rgba(240,235,227,.5);--border:rgba(255,255,255,.07);--border-h:rgba(255,255,255,.12);
-            --btn:#2d6a4f;--btn-h:#357a5e;--btn-text:#ffffff;
+            --bg:#111111;--surface:#1a1a1c;--card:#222225;--accent:#c9953c;
+            --accent-h:#daa84f;--accent-glow:rgba(201,149,60,0.18);
+            --fg:#f0ebe3;--muted:#8a8580;--border:#2e2e32;--border-h:#444;
             --success:#34d399;--error:#f87171;
         }
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden}
         h1,h2,h3{font-family:'Playfair Display',serif}
         body::before{content:'';position:fixed;inset:-50%;width:200%;height:200%;
-            background:radial-gradient(ellipse at 20% 50%,rgba(45,106,79,.03)0%,transparent 50%),
-                        radial-gradient(ellipse at 80% 20%,rgba(45,106,79,.02)0%,transparent 50%);
+            background:radial-gradient(ellipse at 20% 50%,rgba(201,149,60,.03)0%,transparent 50%),
+                        radial-gradient(ellipse at 80% 20%,rgba(201,149,60,.02)0%,transparent 50%);
             animation:bgF 20s ease-in-out infinite alternate;pointer-events:none;z-index:-1}
         @keyframes bgF{0%{transform:translate(0,0)}100%{transform:translate(-3%,2%)}}
 
         #loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:opacity .5s}
         #loader.hide{opacity:0;pointer-events:none}
         .ld-grid{display:grid;grid-template-columns:repeat(3,12px);gap:8px}
-        .ld-grid span{width:12px;height:12px;border-radius:3px;background:var(--btn);opacity:.15;animation:ldP 1.2s ease-in-out infinite}
+        .ld-grid span{width:12px;height:12px;border-radius:3px;background:var(--accent);opacity:.15;animation:ldP 1.2s ease-in-out infinite}
         .ld-grid span:nth-child(1){animation-delay:0s}.ld-grid span:nth-child(2){animation-delay:.1s}
         .ld-grid span:nth-child(3){animation-delay:.2s}.ld-grid span:nth-child(4){animation-delay:.3s}
         .ld-grid span:nth-child(5){animation-delay:.4s}.ld-grid span:nth-child(6){animation-delay:.5s}
@@ -36,31 +36,29 @@
 
         #banner{position:relative;width:100%;overflow:hidden;background:var(--surface);min-height:120px}
         #banner img{width:100%;height:auto;display:block}
-        .banner-ov{position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 0%,rgba(17,17,17,.5) 30%,transparent 60%);display:flex;flex-direction:column;justify-content:flex-end;padding:20px}
 
-        /* Variant Cards */
-        .variant-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;
+        .variant-card{background:var(--card);border:2px solid var(--border);border-radius:16px;overflow:hidden;
             transition:all .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
-        .variant-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.2);border-color:var(--border-h)}
-        .variant-card.selected{border-color:var(--btn);box-shadow:0 0 0 1px var(--btn),0 6px 24px rgba(45,106,79,.15)}
+        .variant-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.25);border-color:var(--border-h)}
+        .variant-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 8px 32px var(--accent-glow)}
         .variant-card.clickable{cursor:pointer}
 
         .card-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px}
-        .clr-sw{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border-h);flex-shrink:0}
-        .clr-nm{font-weight:600;font-size:13px;margin-left:7px;color:var(--fg)}
-        .card-pr{font-weight:700;font-size:13px;color:var(--fg)}
+        .clr-sw{width:18px;height:18px;border-radius:50%;border:2px solid rgba(128,128,128,.25);flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+        .clr-nm{font-weight:600;font-size:13px;margin-left:7px}
+        .card-pr{font-weight:700;font-size:13px;color:var(--accent)}
 
         .card-img{padding:0 12px}
-        .card-img img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;background:var(--surface);display:block}
+        .card-img img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;background:var(--surface);display:block}
 
         .card-sizes{display:flex;flex-wrap:wrap;gap:5px;padding:10px 12px 8px}
         .sz-pill{display:flex;flex-direction:column;align-items:center;padding:6px 10px;border-radius:8px;
-            border:1px solid var(--border);background:var(--surface);color:var(--fg);min-width:44px;
+            border:1.5px solid var(--border);background:var(--surface);color:var(--fg);min-width:44px;
             transition:all .2s ease;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px}
-        .sz-pill:hover:not(:disabled):not(.sel){border-color:var(--border-h)}
-        .sz-pill.sel{background:var(--btn);border-color:var(--btn);color:var(--btn-text);font-weight:600;
-            box-shadow:0 3px 10px rgba(45,106,79,.2);transform:scale(1.05)}
-        .sz-pill.sel .sz-stk{color:rgba(255,255,255,.6)}
+        .sz-pill:hover:not(:disabled):not(.sel){border-color:var(--accent);background:rgba(201,149,60,.08)}
+        .sz-pill.sel{background:var(--accent);border-color:var(--accent);color:#111;font-weight:600;
+            box-shadow:0 3px 12px var(--accent-glow);transform:scale(1.05)}
+        .sz-pill.sel .sz-stk{color:rgba(0,0,0,.5)}
         .sz-pill.oos{opacity:.25;cursor:not-allowed;pointer-events:none}
         .sz-pill.oos .sz-lbl{text-decoration:line-through}
         .sz-stk{font-size:9px;color:var(--muted);margin-top:1px}
@@ -69,14 +67,14 @@
 
         .card-actions{display:flex;align-items:center;gap:6px;padding:8px 12px 12px;border-top:1px solid var(--border);margin-top:auto}
         .c-qty-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:var(--surface);
-            border:1px solid var(--border);border-radius:8px;color:var(--fg);cursor:pointer;transition:all .2s;font-size:15px;font-weight:600;flex-shrink:0}
-        .c-qty-btn:hover{border-color:var(--border-h)}
-        .c-qty-in{width:38px;height:30px;text-align:center;background:var(--surface);border:1px solid var(--border);
+            border:1.5px solid var(--border);border-radius:8px;color:var(--fg);cursor:pointer;transition:all .2s;font-size:15px;font-weight:600;flex-shrink:0}
+        .c-qty-btn:hover{border-color:var(--accent);color:var(--accent)}
+        .c-qty-in{width:38px;height:30px;text-align:center;background:var(--surface);border:1.5px solid var(--border);
             border-radius:8px;color:var(--fg);font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;outline:none;flex-shrink:0}
-        .c-qty-in:focus{border-color:var(--border-h)}
-        .c-add{flex:1;padding:7px 10px;background:var(--btn);color:var(--btn-text);font-size:12px;font-weight:700;
+        .c-qty-in:focus{border-color:var(--accent)}
+        .c-add{flex:1;padding:7px 10px;background:var(--accent);color:#111;font-size:12px;font-weight:700;
             border:none;border-radius:8px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;white-space:nowrap}
-        .c-add:hover{background:var(--btn-h)}
+        .c-add:hover{background:var(--accent-h)}
         .c-add:active{transform:scale(.97)}
         .c-add:disabled{opacity:.3;cursor:not-allowed;transform:none}
 
@@ -84,22 +82,21 @@
 
         @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
         .shake{animation:shake .35s ease}
-        @keyframes addedPulse{0%{box-shadow:0 0 0 0 rgba(45,106,79,.4)}70%{box-shadow:0 0 0 8px rgba(45,106,79,0)}100%{box-shadow:none}}
+        @keyframes addedPulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:none}}
         .card-added{animation:addedPulse .5s ease}
         @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
         .cart-enter{animation:slideIn .25s ease}
 
-        /* Order / Form */
-        .order-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
-        .fi{width:100%;padding:9px 11px;background:var(--surface);border:1px solid var(--border);border-radius:8px;
+        .order-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+        .fi{width:100%;padding:9px 11px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;
             color:var(--fg);font-size:13px;font-family:'DM Sans',sans-serif;transition:border-color .2s;outline:none}
-        .fi:focus{border-color:var(--border-h)}
+        .fi:focus{border-color:var(--accent)}
         .fi::placeholder{color:var(--muted)}
         .fl{display:block;font-size:10px;font-weight:500;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
 
-        .btn-p{width:100%;padding:12px 20px;background:var(--btn);color:var(--btn-text);font-size:14px;font-weight:700;
-            border:none;border-radius:10px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
-        .btn-p:hover{background:var(--btn-h);transform:translateY(-1px)}
+        .btn-p{width:100%;padding:12px 20px;background:var(--accent);color:#111;font-size:14px;font-weight:700;
+            border:none;border-radius:11px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+        .btn-p:hover{background:var(--accent-h);transform:translateY(-1px)}
         .btn-p:active{transform:scale(.98)}
         .btn-p:disabled{opacity:.35;cursor:not-allowed;transform:none}
 
@@ -114,15 +111,14 @@
         .toast.ok{background:#065f46;color:#d1fae5;border:1px solid #10b981}
         .toast.err{background:#7f1d1d;color:#fecaca;border:1px solid #f87171}
 
-        .modal-ov{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);
-            display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .3s}
+        .modal-ov{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+            display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .3s}
         .modal-ov.show{opacity:1;pointer-events:all}
-        .modal-ct{background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 32px;
-            max-width:480px;width:100%;max-height:90vh;overflow-y:auto;
-            transform:translateY(100%);transition:transform .4s cubic-bezier(.4,0,.2,1)}
-        .modal-ov.show .modal-ct{transform:translateY(0)}
+        .modal-ct{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;
+            max-width:400px;width:100%;transform:scale(.9);transition:transform .3s;text-align:center}
+        .modal-ov.show .modal-ct{transform:scale(1)}
 
-        .desc-toggle{cursor:pointer;color:var(--muted);font-size:11px;font-weight:600;border:none;background:none;
+        .desc-toggle{cursor:pointer;color:var(--accent);font-size:11px;font-weight:600;border:none;background:none;
             font-family:'DM Sans',sans-serif;padding:0;margin-top:2px}
         .desc-toggle:hover{text-decoration:underline}
 
@@ -130,12 +126,9 @@
         .err-box code{display:block;margin-top:6px;padding:8px;background:rgba(0,0,0,.4);border-radius:6px;
             font-size:10px;color:#fca5a5;word-break:break-all;font-family:monospace;white-space:pre-wrap;line-height:1.4}
 
-        @keyframes checkPop{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
-        .check-pop{animation:checkPop .4s ease}
-
         ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}
         ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-        @media(min-width:640px){.modal-ct{border-radius:20px;align-self:center;max-height:85vh}}
+
         @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
     </style>
 </head>
@@ -155,55 +148,66 @@
         <div id="err-detail" class="err-box hidden"><code id="err-code"></code></div>
         <div class="flex gap-2 justify-center mt-4 flex-wrap">
             <button onclick="location.reload()" class="btn-p" style="width:auto;padding:10px 24px;font-size:13px"><i class="fas fa-redo mr-1"></i>Retry</button>
-            <button onclick="testConnection()" class="btn-p" style="width:auto;padding:10px 24px;font-size:13px;background:transparent;color:var(--fg);border:1px solid var(--border)"><i class="fas fa-stethoscope mr-1"></i>Diagnose</button>
+            <button onclick="testConnection()" class="btn-p" style="width:auto;padding:10px 24px;font-size:13px;background:transparent;color:var(--accent);border:1.5px solid var(--accent)"><i class="fas fa-stethoscope mr-1"></i>Diagnose</button>
         </div>
         <div id="diag-result" class="err-box hidden mt-3 text-left"></div>
     </div>
 </div>
 
 <div id="app" class="hidden">
+
+    <!-- Banner: hanya gambar, tanpa overlay teks -->
     <header id="banner">
         <img id="banner-img" src="" alt="Banner">
-        <div class="banner-ov">
-            <span id="cat-badge" class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold mb-1" style="background:var(--btn);color:var(--btn-text);letter-spacing:.5px;width:fit-content"></span>
-            <h1 id="prod-name" class="text-2xl sm:text-3xl font-black leading-tight"></h1>
-        </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-3 sm:px-5 py-4 lg:py-10">
         <div class="grid lg:grid-cols-5 gap-4 lg:gap-10">
+
+            <!-- Kiri: Kategori + Judul + Harga + Deskripsi + Variant -->
             <div class="lg:col-span-3 space-y-3 lg:space-y-6">
+
+                <!-- Kategori dan Judul — mengalir normal di bawah banner -->
+                <div>
+                    <span id="cat-badge" class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold mb-2" style="background:var(--accent);color:#111;letter-spacing:.5px"></span>
+                    <h1 id="prod-name" class="text-2xl sm:text-3xl font-black leading-tight"></h1>
+                </div>
+
                 <div id="price-block"></div>
+
                 <div id="desc-block" class="hidden">
                     <div id="desc-text" style="color:var(--muted);font-size:12px;line-height:1.6"></div>
                     <button id="desc-btn" class="desc-toggle">Read more</button>
                 </div>
+
                 <section id="variant-section">
-                    <h2 class="font-bold mb-2" style="font-size:14px;color:var(--fg)">
-                        <i class="fas fa-swatchbook mr-1.5" style="font-size:13px"></i>Select Variant
+                    <h2 class="font-bold mb-2" style="font-size:14px">
+                        <i class="fas fa-swatchbook mr-1.5" style="color:var(--accent);font-size:13px"></i>Select Variant
                     </h2>
                     <div id="variant-cards"></div>
                 </section>
             </div>
+
+            <!-- Kanan: Order Summary + Form -->
             <div class="lg:col-span-2">
                 <div class="lg:sticky lg:top-4 space-y-3 lg:space-y-5">
                     <div class="order-card">
-                        <h2 class="font-bold mb-2" style="font-size:14px;color:var(--fg)">
-                            <i class="fas fa-receipt mr-1.5" style="font-size:13px"></i>Order Summary
+                        <h2 class="font-bold mb-2" style="font-size:14px">
+                            <i class="fas fa-receipt mr-1.5" style="color:var(--accent);font-size:13px"></i>Order Summary
                         </h2>
                         <div id="cart-empty" class="text-center py-5" style="color:var(--muted);font-size:12px">
                             <i class="fas fa-shopping-bag text-lg mb-1 block" style="opacity:.25"></i>No items yet
                         </div>
                         <div id="cart-items" class="space-y-2 hidden"></div>
                         <div id="cart-totals" class="hidden mt-3 pt-3" style="border-top:1px solid var(--border)">
-                            <div class="flex justify-between text-xs mb-1"><span style="color:var(--muted)">Subtotal</span><span id="t-sub" style="color:var(--fg)"></span></div>
-                            <div class="flex justify-between text-xs mb-2"><span style="color:var(--muted)">Shipping</span><span id="t-ship" style="color:var(--fg)"></span></div>
-                            <div class="flex justify-between font-bold text-base pt-2" style="border-top:1px solid var(--border)"><span style="color:var(--fg)">Total</span><span id="t-total" style="color:var(--fg);font-size:17px"></span></div>
+                            <div class="flex justify-between text-xs mb-1"><span style="color:var(--muted)">Subtotal</span><span id="t-sub"></span></div>
+                            <div class="flex justify-between text-xs mb-2"><span style="color:var(--muted)">Shipping</span><span id="t-ship"></span></div>
+                            <div class="flex justify-between font-bold text-base pt-2" style="border-top:1px solid var(--border)"><span>Total</span><span id="t-total" style="color:var(--accent)"></span></div>
                         </div>
                     </div>
                     <div class="order-card">
-                        <h2 class="font-bold mb-3" style="font-size:14px;color:var(--fg)">
-                            <i class="fas fa-truck mr-1.5" style="font-size:13px"></i>Shipping Details
+                        <h2 class="font-bold mb-3" style="font-size:14px">
+                            <i class="fas fa-truck mr-1.5" style="color:var(--accent);font-size:13px"></i>Shipping Details
                         </h2>
                         <form id="buyer-form" class="space-y-2.5" autocomplete="off" novalidate>
                             <div><label class="fl" for="f-name">Full Name <span style="color:var(--error)">*</span></label><input class="fi" id="f-name" type="text" placeholder="John Doe" required></div>
@@ -217,7 +221,7 @@
                     <button class="btn-p" id="submit-btn" disabled style="padding:13px;font-size:14px">
                         <i class="fas fa-lock mr-1.5" style="font-size:12px"></i>Place Order
                     </button>
-                    <p class="text-center" style="font-size:10px;color:var(--muted);opacity:.6"><i class="fas fa-shield-alt mr-1"></i>Secure checkout via PayPal</p>
+                    <p class="text-center" style="font-size:10px;color:var(--muted);opacity:.4"><i class="fas fa-shield-alt mr-1"></i>Secure checkout via PayPal</p>
                 </div>
             </div>
         </div>
@@ -227,37 +231,14 @@
 
 <div id="success-modal" class="modal-ov">
     <div class="modal-ct">
-        <div class="text-center">
-            <div class="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center check-pop" style="background:rgba(52,211,153,.15)">
-                <i class="fas fa-check text-xl" style="color:#34d399"></i>
-            </div>
-            <h2 class="text-lg font-bold mb-1" style="color:var(--fg)">Order Placed!</h2>
-            <p id="modal-oid" class="text-xs mb-4" style="color:var(--muted)"></p>
+        <div class="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style="background:rgba(52,211,153,.15)">
+            <i class="fas fa-check text-lg" style="color:var(--success)"></i>
         </div>
-        <div id="modal-details" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px">
-            <p id="modal-product" class="text-xs font-bold mb-2" style="color:var(--fg)"></p>
-            <div id="modal-items" class="space-y-1.5 mb-3"></div>
-            <div style="border-top:1px solid var(--border);padding-top:8px">
-                <div class="flex justify-between text-xs mb-1"><span style="color:var(--muted)">Subtotal</span><span id="modal-sub" style="color:var(--fg)"></span></div>
-                <div class="flex justify-between text-xs mb-2"><span style="color:var(--muted)">Shipping</span><span id="modal-ship" style="color:var(--fg)"></span></div>
-                <div class="flex justify-between font-bold" style="color:var(--fg)"><span>Total</span><span id="modal-total" style="font-size:16px"></span></div>
-            </div>
-        </div>
-        <button class="btn-p" id="modal-pay" style="padding:14px;font-size:15px;margin-bottom:10px">
-            <i class="fab fa-paypal mr-2"></i>Pay Now
-        </button>
-        <div style="text-align:center;padding:10px 0;border-top:1px solid var(--border)">
-            <p class="text-xs" style="color:var(--muted);margin-bottom:6px">Need help? Contact us:</p>
-            <a href="mailto:novavariety@hotmail.com" class="text-xs" style="color:var(--fg);text-decoration:none;display:block;margin-bottom:3px">
-                <i class="fas fa-envelope" style="font-size:10px;margin-right:4px"></i>novavariety@hotmail.com
-            </a>
-            <a href="https://wa.me/6285161990373" target="_blank" class="text-xs" style="color:var(--fg);text-decoration:none">
-                <i class="fab fa-whatsapp" style="font-size:11px;margin-right:4px"></i>+62 851-6199-0373
-            </a>
-        </div>
-        <button id="modal-close" style="width:100%;padding:10px;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;border-radius:8px">
-            Close
-        </button>
+        <h2 class="text-lg font-bold mb-1">Order Placed</h2>
+        <p id="modal-oid" class="text-xs mb-1" style="color:var(--muted)"></p>
+        <p id="modal-total" class="text-lg font-bold mb-4" style="color:var(--accent)"></p>
+        <p class="text-xs mb-4" style="color:var(--muted);line-height:1.5">Complete payment via the PayPal link.<br>Confirmation email has been sent.</p>
+        <button class="btn-p" id="modal-close" style="width:auto;display:inline-block;padding:10px 32px;font-size:13px">Done</button>
     </div>
 </div>
 
@@ -265,13 +246,13 @@
 
 <script>
 const CFG = {
-    PAYPAL_ME: 'https://paypal.me/novavariety',
-    SELLER_EMAIL: 'novavariety@hotmail.com',
-    SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzpj6MdFIKB3NviKkZ-AQhkEUKY_Utxdga6COXsyPadqBOUZdnXhZ-lMCEzvYN630UyQg/exec'
+    SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzpj6MdFIKB3NviKkZ-AQhkEUKY_Utxdga6COXsyPadqBOUZdnXhZ-lMCEzvYN630UyQg/exec',
+    SELLER_EMAIL: 'novavariety@gmail.com',
+    PAYPAL_ME: 'https://www.paypal.com/paypalme/my/profile'
 };
 const COUNTRIES = ['United States','United Kingdom','Canada','Australia','Germany','France','Netherlands','Italy','Spain','Japan','South Korea','Singapore','Malaysia','Thailand','Philippines','Indonesia','India','Saudi Arabia','UAE','Brazil','Mexico','New Zealand','Sweden','Switzerland','Belgium','Poland','Portugal','Ireland','Turkey','South Africa','Nigeria','Argentina','Chile','Vietnam','Hong Kong','Taiwan','Pakistan','Bangladesh','Myanmar','Cambodia','Russia','Egypt','Colombia','Peru','Kenya'];
 
-let product = null, variants = [], cart = [], lastOrder = null;
+let product = null, variants = [], cart = [];
 const SHEET = new URLSearchParams(window.location.search).get('sheet') || 'Long_Sleeve';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -279,12 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
     COUNTRIES.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
     document.getElementById('submit-btn').addEventListener('click', submitOrder);
     document.getElementById('modal-close').addEventListener('click', () => document.getElementById('success-modal').classList.remove('show'));
-    document.getElementById('modal-pay').addEventListener('click', () => {
-        if (!CFG.PAYPAL_ME || !lastOrder) return;
-        const amt = lastOrder.grandTotal;
-        const url = CFG.PAYPAL_ME.endsWith('/') ? CFG.PAYPAL_ME + amt.toFixed(2) : CFG.PAYPAL_ME + '/' + amt.toFixed(2);
-        window.open(url, '_blank');
-    });
     document.getElementById('desc-btn').addEventListener('click', toggleDesc);
 
     const vc = document.getElementById('variant-cards');
@@ -298,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.dataset.selSku = pill.dataset.sku; card.dataset.selSize = pill.dataset.size;
             card.dataset.selStock = pill.dataset.stock; card.dataset.selPrice = pill.dataset.price;
             card.dataset.selWeight = pill.dataset.weight; card.dataset.selImg = pill.dataset.img;
-            if (pill.dataset.img) { const img = card.querySelector('.card-img img'); if (img) img.src = pill.dataset.img; }
+            if (pill.dataset.img) { const img = card.querySelector('.card-img img'); if (img) img.src = fixImg(pill.dataset.img); }
             const inp = card.querySelector('.c-qty-in'); if (inp) inp.value = 1;
             return;
         }
@@ -328,7 +303,27 @@ document.addEventListener('DOMContentLoaded', () => {
 function cardMax(card) { const s = parseInt(card.dataset.selStock); return (s && s > 0) ? s : 999; }
 
 // =============================================
-// Warna helpers
+// Fix URL gambar — GitHub & Google Drive auto-fix
+// =============================================
+function fixImg(url) {
+    if (!url || typeof url !== 'string') return '';
+    url = url.trim();
+    if (url.indexOf('github.com/') !== -1 && url.indexOf('/blob/') !== -1 && url.indexOf('?raw=true') === -1) {
+        url += '?raw=true';
+    }
+    if (url.indexOf('drive.google.com/file/d/') !== -1) {
+        var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+    }
+    if (url.indexOf('drive.google.com/open?id=') !== -1) {
+        var m2 = url.match(/id=([a-zA-Z0-9_-]+)/);
+        if (m2) return 'https://drive.google.com/uc?export=view&id=' + m2[1];
+    }
+    return url;
+}
+
+// =============================================
+// Hex → RGBA helpers
 // =============================================
 function hexToRgba(hex, a) {
     if (!hex || hex.length < 4) return '';
@@ -340,20 +335,42 @@ function hexToRgba(hex, a) {
     return 'rgba('+r+','+g+','+b+','+a+')';
 }
 
-function getLum(hex) {
-    if (!hex || hex.length < 4) return 0.5;
-    hex = hex.replace('#','');
-    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-    if (hex.length !== 6) return 0.5;
-    const r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
-    if (isNaN(r)||isNaN(g)||isNaN(b)) return 0.5;
-    return (0.299*r + 0.587*g + 0.114*b) / 255;
-}
-
 function applyCardBg(card, code) {
     if (!code) return;
-    const c1 = hexToRgba(code, 0.12), c2 = hexToRgba(code, 0.03);
+    const c1 = hexToRgba(code, 0.15), c2 = hexToRgba(code, 0.04);
     if (c1) card.style.background = 'linear-gradient(155deg,'+c1+' 0%,'+c2+' 35%,var(--card) 100%)';
+}
+
+function deriveBorder(hex) {
+    if (!hex || hex.length < 4) return '';
+    hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
+    const r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+    if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
+    return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.12)':'rgba(255,255,255,0.08)';
+}
+
+function deriveSurface(hex) {
+    if (!hex || hex.length < 4) return '';
+    hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
+    const r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+    if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
+    return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.04)';
+}
+
+function deriveMuted(hex) {
+    if (!hex || hex.length < 4) return '';
+    hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
+    const r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+    if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
+    return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.5)':'rgba(255,255,255,0.5)';
+}
+
+function deriveBorderHover(hex) {
+    if (!hex || hex.length < 4) return '';
+    hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
+    const r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+    if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
+    return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.22)':'rgba(255,255,255,0.15)';
 }
 
 // =============================================
@@ -377,24 +394,16 @@ async function fetchProduct() {
         st.textContent = 'Rendering...';
         product = data.product; variants = data.variants || [];
 
-        const root = document.documentElement.style;
-
-        // BG Color
-        if (product.bgColor) { root.setProperty('--bg', product.bgColor); document.body.style.background = product.bgColor; }
-
-        // Card BG → card, border, surface
+        if (product.bgColor) { document.documentElement.style.setProperty('--bg', product.bgColor); document.body.style.background = product.bgColor; }
         if (product.cardBg) {
-            root.setProperty('--card', product.cardBg);
-            const lum = getLum(product.cardBg);
-            root.setProperty('--border', lum > 0.5 ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)');
-            root.setProperty('--border-h', lum > 0.5 ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.1)');
-            root.setProperty('--surface', lum > 0.5 ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)');
+            document.documentElement.style.setProperty('--card', product.cardBg);
+            const bdr = deriveBorder(product.cardBg); if (bdr) document.documentElement.style.setProperty('--border', bdr);
+            const srf = deriveSurface(product.cardBg); if (srf) document.documentElement.style.setProperty('--surface', srf);
         }
-
-        // Card Text → fg (semua teks), muted (50% opacity dari fg)
         if (product.cardText) {
-            root.setProperty('--fg', product.cardText);
-            root.setProperty('--muted', hexToRgba(product.cardText, 0.5));
+            document.documentElement.style.setProperty('--fg', product.cardText);
+            const mut = deriveMuted(product.cardText); if (mut) document.documentElement.style.setProperty('--muted', mut);
+            const bh = deriveBorderHover(product.cardText); if (bh) document.documentElement.style.setProperty('--border-h', bh);
         }
 
         if (product.gtmId) { const s=document.createElement('script'); s.textContent="(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','"+product.gtmId+"');"; document.head.prepend(s); }
@@ -420,10 +429,10 @@ async function fetchProduct() {
 
 async function testConnection() {
     const d=document.getElementById('diag-result'); d.classList.remove('hidden');
-    d.innerHTML='<p style="color:var(--fg);font-size:11px"><i class="fas fa-spinner fa-spin mr-1"></i>Diagnosing...</p>';
+    d.innerHTML='<p style="color:var(--accent);font-size:11px"><i class="fas fa-spinner fa-spin mr-1"></i>Diagnosing...</p>';
     let r=[];
     try{const res=await fetch(CFG.SCRIPT_URL+'?sheet='+encodeURIComponent(SHEET)+'&_t='+Date.now(),{signal:AbortSignal.timeout(15000)});
-    r.push('HTTP '+res.status);const txt=await res.text();try{const j=JSON.parse(txt);r.push(j.success?'OK — product: '+(j.product?.name||'-')+', variants: '+(j.variants?.length||0)+', cardBg: '+(j.product?.cardBg||'(default)')+', cardText: '+(j.product?.cardText||'(default)'):'FAIL — '+j.error);}catch{r.push('FAIL — bukan JSON: '+txt.substring(0,150));}}catch(e){r.push('FAIL — '+e.message);}
+    r.push('HTTP '+res.status);const txt=await res.text();try{const j=JSON.parse(txt);r.push(j.success?'OK — product: '+(j.product?.name||'-')+', variants: '+(j.variants?.length||0):'FAIL — '+j.error);}catch{r.push('FAIL — bukan JSON: '+txt.substring(0,150));}}catch(e){r.push('FAIL — '+e.message);}
     r.push('Sheet: "'+SHEET+'"');
     d.innerHTML=r.map(x=>'<p style="font-size:10px;color:var(--muted);margin-bottom:2px">'+x+'</p>').join('');
 }
@@ -433,15 +442,19 @@ async function testConnection() {
 // =============================================
 function renderProduct() {
     const be = document.getElementById('banner-img');
-    if(product.bannerImage){be.src=product.bannerImage;be.style.display='block';}
-    else if(product.productImage){be.src=product.productImage;be.style.display='block';}
+    if(product.bannerImage){be.src=fixImg(product.bannerImage);be.style.display='block';}
+    else if(product.productImage){be.src=fixImg(product.productImage);be.style.display='block';}
     else{be.style.display='none';document.getElementById('banner').style.display='none';}
-    const ce=document.getElementById('cat-badge');if(product.category){ce.textContent=product.category;ce.style.display='';}else{ce.style.display='none';}
+
+    // Kategori dan judul — sekarang di luar banner, mengalir normal
+    const ce=document.getElementById('cat-badge');
+    if(product.category){ce.textContent=product.category;ce.style.display='';}else{ce.style.display='none';}
     document.getElementById('prod-name').textContent=product.name||'Product';
+
     const cur=product.currency||'USD', price=Number(product.sellingPrice)||0;
-    document.getElementById('price-block').innerHTML='<span style="font-size:22px;font-weight:800;color:var(--fg)">'+fmtPrice(price,cur)+'</span>';
+    document.getElementById('price-block').innerHTML='<span style="font-size:22px;font-weight:800;color:var(--accent)">'+fmtPrice(price,cur)+'</span>';
     if(product.description&&product.description.trim()){const b=document.getElementById('desc-block');b.classList.remove('hidden');const t=product.description.trim(),l=t.split('\n');if(l.length>3){document.getElementById('desc-text').innerHTML=l.slice(0,3).join('<br>')+'<span id="desc-more" class="hidden">'+l.slice(3).join('<br>')+'</span>';document.getElementById('desc-btn').classList.remove('hidden');document.getElementById('desc-btn').textContent='Read more';document.getElementById('desc-btn').dataset.open='0';}else{document.getElementById('desc-text').innerHTML=t.replace(/\n/g,'<br>');document.getElementById('desc-btn').classList.add('hidden');}}
-    if(product.footerImage){document.getElementById('footer-section').classList.remove('hidden');document.getElementById('footer-img').src=product.footerImage;}
+    if(product.footerImage){document.getElementById('footer-section').classList.remove('hidden');document.getElementById('footer-img').src=fixImg(product.footerImage);}
     renderVariantCards();
 }
 
@@ -473,9 +486,9 @@ function renderColorSize(container) {
         const mn=prices.length?Math.min(...prices):Number(product.sellingPrice)||0, mx=prices.length?Math.max(...prices):mn;
         const ps=mn===mx?fmtPrice(mn):fmtPrice(mn)+' – '+fmtPrice(mx), showP=mn!==mx;
         let h='<div class="card-head"><div class="flex items-center"><span class="clr-sw" style="background:'+(grp.colorCode||'#888')+'"></span><span class="clr-nm">'+esc(name)+'</span></div><span class="card-pr">'+ps+'</span></div>';
-        if(grp.image) h+='<div class="card-img"><img src="'+esc(grp.image)+'" alt="'+esc(name)+'" loading="lazy"></div>';
+        if(grp.image) h+='<div class="card-img"><img src="'+fixImg(grp.image)+'" alt="'+esc(name)+'" loading="lazy"></div>';
         h+='<div class="card-sizes">';
-        grp.sizes.forEach(s=>{const stk=Number(s.stock)||0,oos=stk<=0;h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(s.sku)+'" data-size="'+esc(s.size)+'" data-stock="'+stk+'" data-price="'+(Number(s.price)||0)+'" data-weight="'+(Number(s.weight)||0)+'" data-img="'+esc(s.variantImage||'')+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(s.size)+(showP&&Number(s.price)>0?'<br>'+fmtPrice(Number(s.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';});
+        grp.sizes.forEach(s=>{const stk=Number(s.stock)||0,oos=stk<=0;h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(s.sku)+'" data-size="'+esc(s.size)+'" data-stock="'+stk+'" data-price="'+(Number(s.price)||0)+'" data-weight="'+(Number(s.weight)||0)+'" data-img="'+fixImg(esc(s.variantImage||''))+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(s.size)+(showP&&Number(s.price)>0?'<br>'+fmtPrice(Number(s.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';});
         h+='</div>'+cardActionsHTML(false);
         card.innerHTML = h; container.appendChild(card);
     });
@@ -491,11 +504,11 @@ function renderColorOnly(container) {
         card.dataset.color=v.color||'Default'; card.dataset.colorcode=v.colorCode||'';
         card.dataset.sku=v.sku||''; card.dataset.stock=stk;
         card.dataset.price=Number(v.price)||0; card.dataset.weight=Number(v.weight)||0;
-        card.dataset.img=v.variantImage||'';
+        card.dataset.img=fixImg(v.variantImage||'');
         applyCardBg(card, v.colorCode);
         const price=Number(v.price)||Number(product.sellingPrice)||0;
         let h='<div class="card-head"><div class="flex items-center"><span class="clr-sw" style="background:'+(v.colorCode||'#888')+'"></span><span class="clr-nm">'+esc(v.color||'Default')+'</span></div><span class="card-pr">'+fmtPrice(price)+'</span></div>';
-        if(v.variantImage) h+='<div class="card-img"><img src="'+esc(v.variantImage)+'" alt="'+esc(v.color)+'" loading="lazy"></div>';
+        if(v.variantImage) h+='<div class="card-img"><img src="'+fixImg(esc(v.variantImage))+'" alt="'+esc(v.color)+'" loading="lazy"></div>';
         h+='<div class="card-stk"><i class="fas fa-cube" style="font-size:9px"></i> '+(oos?'<span style="color:var(--error)">Out of stock</span>':stk+' available')+'</div>';
         h+=cardActionsHTML(oos);
         card.innerHTML = h; container.appendChild(card);
@@ -509,11 +522,11 @@ function renderSizeOnly(container) {
     card.dataset.color=''; card.dataset.colorcode='';
     const prices=variants.map(v=>Number(v.price)).filter(p=>p>0);
     const mn=prices.length?Math.min(...prices):Number(product.sellingPrice)||0, mx=prices.length?Math.max(...prices):mn, showP=mn!==mx;
-    const img=product.productImage||(variants.find(v=>v.variantImage)||{}).variantImage||'';
+    const img=fixImg(product.productImage||(variants.find(v=>v.variantImage)||{}).variantImage||'');
     let h='<div class="size-only-head">Select Size</div>';
-    if(img) h+='<div class="card-img"><img src="'+esc(img)+'" alt="Product" loading="lazy"></div>';
+    if(img) h+='<div class="card-img"><img src="'+img+'" alt="Product" loading="lazy"></div>';
     h+='<div class="card-sizes">';
-    variants.forEach(v=>{const stk=Number(v.stock)||0,oos=stk<=0;h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(v.sku)+'" data-size="'+esc(v.size)+'" data-stock="'+stk+'" data-price="'+(Number(v.price)||0)+'" data-weight="'+(Number(v.weight)||0)+'" data-img="'+esc(v.variantImage||'')+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(v.size)+(showP&&Number(v.price)>0?'<br>'+fmtPrice(Number(v.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';});
+    variants.forEach(v=>{const stk=Number(v.stock)||0,oos=stk<=0;h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(v.sku)+'" data-size="'+esc(v.size)+'" data-stock="'+stk+'" data-price="'+(Number(v.price)||0)+'" data-weight="'+(Number(v.weight)||0)+'" data-img="'+fixImg(esc(v.variantImage||''))+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(v.size)+(showP&&Number(v.price)>0?'<br>'+fmtPrice(Number(v.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';});
     h+='</div>'+cardActionsHTML(false);
     card.innerHTML = h; container.appendChild(card);
 }
@@ -557,7 +570,7 @@ function renderCart() {
     if(!cart.length){em.classList.remove('hidden');it.classList.add('hidden');to.classList.add('hidden');sb.disabled=true;return;}
     em.classList.add('hidden');it.classList.remove('hidden');to.classList.remove('hidden');sb.disabled=false;
     const cur=product.currency||'USD';let h='',sub=0,tw=0;
-    cart.forEach((item,i)=>{const t=item.unitPrice*item.qty;sub+=t;tw+=item.weight*item.qty;const lb=[item.color,item.size].filter(Boolean).join(' / ')||'Product';const lf=item.sku?lb+' ('+item.sku+')':lb;h+='<div class="cart-enter flex items-center gap-2 p-2 rounded-lg" style="background:var(--surface);border:1px solid var(--border)">'+(item.variantImage?'<img src="'+esc(item.variantImage)+'" class="w-9 h-9 rounded-lg object-cover flex-shrink-0" style="background:var(--card)" alt="">':'')+'<div class="flex-1 min-w-0"><p class="text-xs font-semibold truncate" style="color:var(--fg)">'+esc(lf)+'</p><p style="color:var(--muted);font-size:10px">'+fmtPrice(item.unitPrice,cur)+' x '+item.qty+'</p></div><div class="flex items-center gap-1 flex-shrink-0"><span class="text-xs font-bold" style="color:var(--fg)">'+fmtPrice(t,cur)+'</span><button class="rm-btn" onclick="removeFromCart('+i+')" aria-label="Remove"><i class="fas fa-times"></i></button></div></div>';});
+    cart.forEach((item,i)=>{const t=item.unitPrice*item.qty;sub+=t;tw+=item.weight*item.qty;const lb=[item.color,item.size].filter(Boolean).join(' / ')||'Product';const lf=item.sku?lb+' ('+item.sku+')':lb;h+='<div class="cart-enter flex items-center gap-2 p-2 rounded-lg" style="background:var(--surface)">'+(item.variantImage?'<img src="'+fixImg(item.variantImage)+'" class="w-9 h-9 rounded-lg object-cover flex-shrink-0" style="background:var(--card)" alt="">':'')+'<div class="flex-1 min-w-0"><p class="text-xs font-semibold truncate">'+esc(lf)+'</p><p style="color:var(--muted);font-size:10px">'+fmtPrice(item.unitPrice,cur)+' x '+item.qty+'</p></div><div class="flex items-center gap-1 flex-shrink-0"><span class="text-xs font-bold">'+fmtPrice(t,cur)+'</span><button class="rm-btn" onclick="removeFromCart('+i+')" aria-label="Remove"><i class="fas fa-times"></i></button></div></div>';});
     it.innerHTML=h;
     const sk=Number(product.shippingCostPerKg)||0,se=Number(product.shipExtraPercent)||0;
     let sc=(sk>0&&tw>0)?tw*sk*(1+se/100):0;const gr=sub+sc;
@@ -589,23 +602,13 @@ async function submitOrder() {
         const tx=await r.text();let d;try{d=JSON.parse(tx);}catch{throw new Error('Invalid: '+tx.substring(0,150));}
         if(!d.success)throw new Error(d.error||'Server error');
         fetch(CFG.SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'trackEvent',sheet:SHEET,event:'purchase',orderId:oid,itemsCount:cart.length,revenue:gt,details:'Order by '+n})}).catch(()=>{});
-        lastOrder = order;
-        document.getElementById('modal-oid').textContent = 'Order ID: ' + oid;
-        document.getElementById('modal-product').textContent = product.name || 'Product';
-        let itemsHtml = '';
-        cart.forEach(item => {
-            const lb = [item.color, item.size].filter(Boolean).join(' / ') || 'Product';
-            itemsHtml += '<div class="flex justify-between text-xs"><span style="color:var(--muted)">'+esc(lb)+' x'+item.qty+'</span><span style="color:var(--fg)">'+fmtPrice(item.unitPrice*item.qty,cur)+'</span></div>';
-        });
-        document.getElementById('modal-items').innerHTML = itemsHtml;
-        document.getElementById('modal-sub').textContent = fmtPrice(sub, cur);
-        document.getElementById('modal-ship').textContent = sc > 0 ? fmtPrice(sc, cur) : 'Free';
-        document.getElementById('modal-total').textContent = fmtPrice(gt, cur);
-        document.getElementById('modal-pay').style.display = CFG.PAYPAL_ME ? '' : 'none';
+        document.getElementById('modal-oid').textContent='Order ID: '+oid;
+        document.getElementById('modal-total').textContent=fmtPrice(gt,cur);
         document.getElementById('success-modal').classList.add('show');
         cart=[];renderCart();document.getElementById('buyer-form').reset();
         document.querySelectorAll('#variant-cards .variant-card.selected').forEach(c=>c.classList.remove('selected'));
         document.querySelectorAll('#variant-cards .sz-pill.sel').forEach(p=>p.classList.remove('sel'));
+        if(CFG.PAYPAL_ME){window.open(CFG.PAYPAL_ME.endsWith('/')?CFG.PAYPAL_ME+gt.toFixed(2):CFG.PAYPAL_ME+'/'+gt.toFixed(2),'_blank');}
     }catch(e){console.error(e);showToast('Failed: '+e.message,'err');}
     finally{btn.disabled=cart.length===0;btn.innerHTML='<i class="fas fa-lock mr-1.5" style="font-size:12px"></i>Place Order';}
 }
