@@ -531,7 +531,7 @@ function renderSizeOnly(container) {
     card.dataset.color=''; card.dataset.colorcode='';
     const prices=variants.map(v=>Number(v.price)).filter(p=>p>0);
     const mn=prices.length?Math.min(...prices):Number(product.sellingPrice)||0, mx=prices.length?Math.max(...prices):mn, showP=mn!==mx;
-    const img=fixImg(product.productImage||(variants.find(v=>v.variantImage)||{}).variantImage||'';
+    const img = fixImg(product.productImage || (variants.find(v => v.variantImage) || {}).variantImage || '');
     let h='<div class="size-only-head">Select Size</div>';
     if(img) h+='<div class="card-img"><img src="'+img+'" alt="Product" loading="lazy"></div>';
     h+='<div class="card-sizes">';
