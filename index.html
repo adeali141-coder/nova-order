@@ -132,7 +132,6 @@
         .err-box code{display:block;margin-top:6px;padding:8px;background:rgba(0,0,0,.4);border-radius:6px;
             font-size:10px;color:#fca5a5;word-break:break-all;font-family:monospace;white-space:pre-wrap;line-height:1.4}
 
-        /* Data pembeli di modal */
         .buyer-info-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:left;margin:12px 0}
         .buyer-info-row{display:flex;gap:8px;font-size:11px;line-height:1.5}
         .buyer-info-label{color:var(--muted);min-width:70px;flex-shrink:0}
@@ -167,11 +166,9 @@
 </div>
 
 <div id="app" class="hidden">
-
     <header id="banner">
         <img id="banner-img" src="" alt="Banner">
     </header>
-
     <main class="max-w-7xl mx-auto px-3 sm:px-5 py-4 lg:py-10">
         <div class="grid lg:grid-cols-5 gap-4 lg:gap-10">
             <div class="lg:col-span-3 space-y-3 lg:space-y-6">
@@ -231,21 +228,16 @@
     <div id="footer-section" class="hidden"><img id="footer-img" src="" alt="" style="width:100%;max-height:120px;object-fit:cover;opacity:.4"></div>
 </div>
 
-<!-- ===== MODAL SUKSES — dengan data pembeli lengkap ===== -->
 <div id="success-modal" class="modal-ov">
     <div class="modal-ct">
         <div class="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center" style="background:rgba(52,211,153,.15)">
             <i class="fas fa-check text-xl" style="color:var(--success)"></i>
         </div>
         <h2 class="text-lg font-bold mb-1">Order Placed Successfully</h2>
-        
-        <!-- Order ID & Nominal -->
         <div style="background:var(--surface);border-radius:10px;padding:12px;margin:12px 0">
             <p id="modal-oid" class="text-xs font-mono" style="color:var(--accent)"></p>
             <p id="modal-total" class="text-xl font-bold mt-1" style="color:var(--accent)"></p>
         </div>
-
-        <!-- Data Pembeli -->
         <div class="buyer-info-box">
             <p class="text-xs font-semibold mb-2" style="color:var(--accent)">
                 <i class="fas fa-user mr-1"></i>Buyer Information
@@ -256,10 +248,7 @@
             <div class="buyer-info-row"><span class="buyer-info-label">Country</span><span class="buyer-info-value" id="modal-country"></span></div>
             <div class="buyer-info-row"><span class="buyer-info-label">Address</span><span class="buyer-info-value" id="modal-addr"></span></div>
         </div>
-
         <p class="text-xs mb-4" style="color:var(--muted);line-height:1.5">Complete payment via PayPal button below.<br>Confirmation email has been sent.</p>
-
-        <!-- HANYA button Complete Payment — Done sudah dihapus -->
         <button id="complete-pay-btn" class="btn-complete" onclick="completePayment()">
             <i class="fab fa-paypal mr-2"></i>Complete Payment
         </button>
@@ -269,173 +258,127 @@
 <div id="toast" class="toast"></div>
 
 <script>
-// =============================================
-// KONFIGURASI
-// =============================================
-
-const CFG = {
+var CFG = {
     SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyuQ1gihaqdZj4yFSj5CKCE5q_Ri4Aqqh2SQs9qsi2-LS27Qf9N6WEc4nEAvLWZZpSPDg/exec',
     SELLER_EMAIL: 'novavariety@hotmail.com',
     PAYPAL_ME: 'https://paypal.me/novavariety'
 };
 
-const COUNTRIES = ['United States','United Kingdom','Canada','Australia','Germany','France','Netherlands','Italy','Spain','Japan','South Korea','Singapore','Malaysia','Thailand','Philippines','Indonesia','India','Saudi Arabia','UAE','Brazil','Mexico','New Zealand','Sweden','Switzerland','Belgium','Poland','Portugal','Ireland','Turkey','South Africa','Nigeria','Argentina','Chile','Vietnam','Hong Kong','Taiwan','Pakistan','Bangladesh','Myanmar','Cambodia','Russia','Egypt','Colombia','Peru','Kenya'];
+var COUNTRIES = ['United States','United Kingdom','Canada','Australia','Germany','France','Netherlands','Italy','Spain','Japan','South Korea','Singapore','Malaysia','Thailand','Philippines','Indonesia','India','Saudi Arabia','UAE','Brazil','Mexico','New Zealand','Sweden','Switzerland','Belgium','Poland','Portugal','Ireland','Turkey','South Africa','Nigeria','Argentina','Chile','Vietnam','Hong Kong','Taiwan','Pakistan','Bangladesh','Myanmar','Cambodia','Russia','Egypt','Colombia','Peru','Kenya'];
 
-let product = null, variants = [], cart = [], lastOrderId = '', lastGrandTotal = 0, lastCurrency = 'USD', lastBuyerData = null;
-const SHEET = new URLSearchParams(window.location.search).get('sheet') || 'Long_Sleeve';
+var product = null, variants = [], cart = [], lastOrderId = '', lastGrandTotal = 0, lastCurrency = 'USD', lastBuyerData = null;
+var SHEET = new URLSearchParams(window.location.search).get('sheet') || 'Long_Sleeve';
 
-document.addEventListener('DOMContentLoaded', () => {
-    const sel = document.getElementById('f-country');
-    COUNTRIES.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+document.addEventListener('DOMContentLoaded', function() {
+    var sel = document.getElementById('f-country');
+    COUNTRIES.forEach(function(c) { var o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
     document.getElementById('submit-btn').addEventListener('click', submitOrder);
     document.getElementById('desc-btn').addEventListener('click', toggleDesc);
 
-    const vc = document.getElementById('variant-cards');
+    var vc = document.getElementById('variant-cards');
     vc.addEventListener('click', function(e) {
-        const card = e.target.closest('.variant-card');
+        var card = e.target.closest('.variant-card');
         if (!card) return;
-        const pill = e.target.closest('.sz-pill');
+        var pill = e.target.closest('.sz-pill');
         if (pill && !pill.disabled) {
-            card.querySelectorAll('.sz-pill.sel').forEach(p => p.classList.remove('sel'));
+            card.querySelectorAll('.sz-pill.sel').forEach(function(p) { p.classList.remove('sel'); });
             pill.classList.add('sel'); card.classList.add('selected');
             card.dataset.selSku = pill.dataset.sku; card.dataset.selSize = pill.dataset.size;
             card.dataset.selStock = pill.dataset.stock; card.dataset.selPrice = pill.dataset.price;
             card.dataset.selWeight = pill.dataset.weight; card.dataset.selImg = pill.dataset.img;
-            if (pill.dataset.img) { const img = card.querySelector('.card-img img'); if (img) img.src = fixImg(pill.dataset.img); }
-            const inp = card.querySelector('.c-qty-in'); if (inp) inp.value = 1;
+            if (pill.dataset.img) { var img = card.querySelector('.card-img img'); if (img) img.src = fixImg(pill.dataset.img); }
+            var inp = card.querySelector('.c-qty-in'); if (inp) inp.value = 1;
             return;
         }
-        if (e.target.closest('.c-qty-minus')) { const inp = card.querySelector('.c-qty-in'); inp.value = Math.max(1, (parseInt(inp.value)||1)-1); return; }
-        if (e.target.closest('.c-qty-plus')) { const inp = card.querySelector('.c-qty-in'); inp.value = Math.min((parseInt(inp.value)||1)+1, cardMax(card)); return; }
+        if (e.target.closest('.c-qty-minus')) { var inp2 = card.querySelector('.c-qty-in'); inp2.value = Math.max(1, (parseInt(inp2.value)||1)-1); return; }
+        if (e.target.closest('.c-qty-plus')) { var inp3 = card.querySelector('.c-qty-in'); inp3.value = Math.min((parseInt(inp3.value)||1)+1, cardMax(card)); return; }
         if (e.target.closest('.c-add') && !e.target.closest('.c-add').disabled) { addFromCard(card); return; }
         if (card.classList.contains('clickable') && !card.dataset.oos) {
-            vc.querySelectorAll('.variant-card.selected').forEach(c => c.classList.remove('selected'));
+            vc.querySelectorAll('.variant-card.selected').forEach(function(c2) { c2.classList.remove('selected'); });
             card.classList.add('selected');
             card.dataset.selSku = card.dataset.sku; card.dataset.selSize = '';
             card.dataset.selStock = card.dataset.stock; card.dataset.selPrice = card.dataset.price;
             card.dataset.selWeight = card.dataset.weight; card.dataset.selImg = card.dataset.img;
-            const inp = card.querySelector('.c-qty-in'); if (inp) inp.value = 1;
+            var inp4 = card.querySelector('.c-qty-in'); if (inp4) inp4.value = 1;
         }
     });
     vc.addEventListener('input', function(e) {
         if (e.target.classList.contains('c-qty-in')) {
-            const card = e.target.closest('.variant-card');
-            let v = parseInt(e.target.value)||1;
-            if (card) v = Math.min(v, cardMax(card));
-            e.target.value = Math.max(1, v);
+            var card2 = e.target.closest('.variant-card');
+            var v2 = parseInt(e.target.value)||1;
+            if (card2) v2 = Math.min(v2, cardMax(card2));
+            e.target.value = Math.max(1, v2);
         }
     });
     fetchProduct();
 });
 
-function cardMax(card) { const s = parseInt(card.dataset.selStock); return (s && s > 0) ? s : 999; }
+function cardMax(card) { var s = parseInt(card.dataset.selStock); return (s && s > 0) ? s : 999; }
 
-// =============================================
-// FIX IMG URL
-// =============================================
 function fixImg(url) {
     if (!url || typeof url !== 'string') return '';
     url = url.trim();
+    if (!url) return '';
     if (url.indexOf('github.com/') !== -1 && url.indexOf('/blob/') !== -1 && url.indexOf('?raw=true') === -1) url += '?raw=true';
     if (url.indexOf('drive.google.com/file/d/') !== -1) { var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/); if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1]; }
     if (url.indexOf('drive.google.com/open?id=') !== -1) { var m2 = url.match(/id=([a-zA-Z0-9_-]+)/); if (m2) return 'https://drive.google.com/uc?export=view&id=' + m2[1]; }
     return url;
 }
 
-// =============================================
-// Hex → RGBA helpers
-// =============================================
 function hexToRgba(hex, a) {
     if (!hex || hex.length < 4) return '';
     hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
-    const r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
+    var r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
     if (isNaN(r)||isNaN(g)||isNaN(b)) return '';
     return 'rgba('+r+','+g+','+b+','+a+')';
 }
+function applyCardBg(card, code) { if (!code) return; var c1=hexToRgba(code,0.15),c2=hexToRgba(code,0.04); if(c1) card.style.background='linear-gradient(155deg,'+c1+' 0%,'+c2+' 35%,var(--card) 100%)'; }
+function deriveBorder(hex){if(!hex||hex.length<4)return'';hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];if(hex.length!==6)return'';var r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);if(isNaN(r)||isNaN(g)||isNaN(b))return'';return(0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.12)':'rgba(255,255,255,0.08)';}
+function deriveSurface(hex){if(!hex||hex.length<4)return'';hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];if(hex.length!==6)return'';var r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);if(isNaN(r)||isNaN(g)||isNaN(b))return'';return(0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.04)';}
+function deriveMuted(hex){if(!hex||hex.length<4)return'';hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];if(hex.length!==6)return'';var r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);if(isNaN(r)||isNaN(g)||isNaN(b))return'';return(0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.5)':'rgba(255,255,255,0.5)';}
+function deriveBorderHover(hex){if(!hex||hex.length<4)return'';hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];if(hex.length!==6)return'';var r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);if(isNaN(r)||isNaN(g)||isNaN(b))return'';return(0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.22)':'rgba(255,255,255,0.15)';}
 
-function applyCardBg(card, code) {
-    if (!code) return;
-    const c1 = hexToRgba(code, 0.15), c2 = hexToRgba(code, 0.04);
-    if (c1) card.style.background = 'linear-gradient(155deg,'+c1+' 0%,'+c2+' 35%,var(--card) 100%)';
-}
-
-function deriveBorder(hex) {
-    if (!hex || hex.length < 4) return '';
-    hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
-    const r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
-    if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
-    return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.12)':'rgba(255,255,255,0.08)';
-}
-
-function deriveSurface(hex) {
-    if (!hex || hex.length < 4) return '';
-    hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
-    const r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
-    if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
-    return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.04)';
-}
-
-function deriveMuted(hex) {
-    if (!hex || hex.length < 4) return '';
-    hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
-    const r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
-    if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
-    return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.5)':'rgba(255,255,255,0.5)';
-}
-
-function deriveBorderHover(hex) {
-    if (!hex || hex.length < 4) return '';
-    hex = hex.replace('#',''); if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if (hex.length !== 6) return '';
-    const r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
-    if(isNaN(r)||isNaN(g)||isNaN(b)) return '';
-    return (0.299*r+0.587*g+0.114*b)/255>0.5?'rgba(0,0,0,0.22)':'rgba(255,255,255,0.15)';
-}
-
-// =============================================
-// Fetch Product
-// =============================================
 async function fetchProduct() {
-    const st = document.getElementById('loader-status');
+    var st = document.getElementById('loader-status');
     try {
         st.textContent = 'Connecting...';
-        const ctrl = new AbortController(), tid = setTimeout(() => ctrl.abort(), 20000);
-        let res;
+        var ctrl = new AbortController(), tid = setTimeout(function() { ctrl.abort(); }, 20000);
+        var res;
         try { res = await fetch(CFG.SCRIPT_URL+'?sheet='+encodeURIComponent(SHEET)+'&_t='+Date.now(), {signal:ctrl.signal}); }
         catch(e) { clearTimeout(tid); throw e.name==='AbortError'?{type:'timeout',message:'Timeout 20s'}:{type:'network',message:e.message}; }
         clearTimeout(tid);
         st.textContent = 'Parsing...';
-        if (!res.ok) { const t = await res.text().catch(()=>''); throw {type:'http',status:res.status,body:t}; }
-        const raw = await res.text();
-        let data; try { data = JSON.parse(raw); } catch { throw {type:'parse',body:raw}; }
-        if (!data.success) throw {type:'server',message:data.error||'Server error',data};
-        if (!data.product) throw {type:'data',message:'No product data',data};
+        if (!res.ok) { var t = await res.text().catch(function() { return ''; }); throw {type:'http',status:res.status,body:t}; }
+        var raw = await res.text();
+        var data; try { data = JSON.parse(raw); } catch(e2) { throw {type:'parse',body:raw}; }
+        if (!data.success) throw {type:'server',message:data.error||'Server error',data:data};
+        if (!data.product) throw {type:'data',message:'No product data',data:data};
         st.textContent = 'Rendering...';
         product = data.product; variants = data.variants || [];
 
         if (product.bgColor) { document.documentElement.style.setProperty('--bg', product.bgColor); document.body.style.background = product.bgColor; }
         if (product.cardBg) {
             document.documentElement.style.setProperty('--card', product.cardBg);
-            const bdr = deriveBorder(product.cardBg); if (bdr) document.documentElement.style.setProperty('--border', bdr);
-            const srf = deriveSurface(product.cardBg); if (srf) document.documentElement.style.setProperty('--surface', srf);
+            var bdr=deriveBorder(product.cardBg);if(bdr)document.documentElement.style.setProperty('--border',bdr);
+            var srf=deriveSurface(product.cardBg);if(srf)document.documentElement.style.setProperty('--surface',srf);
         }
         if (product.cardText) {
             document.documentElement.style.setProperty('--fg', product.cardText);
-            const mut = deriveMuted(product.cardText); if (mut) document.documentElement.style.setProperty('--muted', mut);
-            const bh = deriveBorderHover(product.cardText); if (bh) document.documentElement.style.setProperty('--border-h', bh);
+            var mut=deriveMuted(product.cardText);if(mut)document.documentElement.style.setProperty('--muted',mut);
+            var bh=deriveBorderHover(product.cardText);if(bh)document.documentElement.style.setProperty('--border-h',bh);
         }
-
-        if (product.gtmId) { const s=document.createElement('script'); s.textContent="(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','"+product.gtmId+"');"; document.head.prepend(s); }
-        if (product.ga4Id) { const s=document.createElement('script'); s.src='https://www.googletagmanager.com/gtag/js?id='+product.ga4Id; document.head.prepend(s); const s2=document.createElement('script'); s2.textContent="window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','"+product.ga4Id+"');"; document.head.appendChild(s2); }
+        if (product.gtmId) { var s=document.createElement('script'); s.textContent="(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','"+product.gtmId+"');"; document.head.prepend(s); }
+        if (product.ga4Id) { var s3=document.createElement('script'); s3.src='https://www.googletagmanager.com/gtag/js?id='+product.ga4Id; document.head.prepend(s3); var s4=document.createElement('script'); s4.textContent="window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','"+product.ga4Id+"');"; document.head.appendChild(s4); }
         renderProduct();
         document.getElementById('loader').classList.add('hide');
         document.getElementById('app').classList.remove('hidden');
     } catch(err) {
-        let msg='',det='';
+        var msg='',det='';
         if(err.type==='timeout'){msg='Server tidak merespon 20 detik.';det='Timeout\n'+CFG.SCRIPT_URL;}
         else if(err.type==='network'){msg='Gagal terhubung. Pastikan deployment "Anyone".';det=err.message;}
         else if(err.type==='http'){msg='HTTP '+err.status;det=(err.body||'').substring(0,400);}
         else if(err.type==='parse'){msg='Bukan JSON. Cek Executions di Apps Script.';det=(err.body||'').substring(0,400);}
-        else if(err.type==='server'){msg=err.message;if(msg.includes('Sheet not found'))msg+='\n\nSheet: "'+SHEET+'" — case-sensitive.';det=JSON.stringify(err.data);}
+        else if(err.type==='server'){msg=err.message;if(msg.indexOf('Sheet not found')!==-1)msg+='\n\nSheet: "'+SHEET+'" — case-sensitive.';det=JSON.stringify(err.data);}
         else{msg=err.message||'Error';det=String(err);}
         document.getElementById('err-msg').textContent=msg;
         document.getElementById('err-code').textContent=det;
@@ -446,43 +389,47 @@ async function fetchProduct() {
 }
 
 async function testConnection() {
-    const d=document.getElementById('diag-result'); d.classList.remove('hidden');
+    var d=document.getElementById('diag-result');d.classList.remove('hidden');
     d.innerHTML='<p style="color:var(--accent);font-size:11px"><i class="fas fa-spinner fa-spin mr-1"></i>Diagnosing...</p>';
-    let r=[];
-    try{const res=await fetch(CFG.SCRIPT_URL+'?sheet='+encodeURIComponent(SHEET)+'&_t='+Date.now(),{signal:AbortSignal.timeout(15000)});
-    r.push('HTTP '+res.status);const txt=await res.text();try{const j=JSON.parse(txt);r.push(j.success?'OK — product: '+(j.product?.name||'-')+', variants: '+(j.variants?.length||0):'FAIL — '+j.error);}catch{r.push('FAIL — bukan JSON: '+txt.substring(0,150));}}catch(e){r.push('FAIL — '+e.message);}
+    var r=[];
+    try{var res=await fetch(CFG.SCRIPT_URL+'?sheet='+encodeURIComponent(SHEET)+'&_t='+Date.now(),{signal:AbortSignal.timeout(15000)});
+    r.push('HTTP '+res.status);var txt=await res.text();try{var j=JSON.parse(txt);r.push(j.success?'OK — product: '+(j.product&&j.product.name?j.product.name:'-')+', variants: '+(j.variants?j.variants.length:0):'FAIL — '+j.error);}catch(e){r.push('FAIL — bukan JSON: '+txt.substring(0,150));}}catch(e){r.push('FAIL — '+e.message);}
     r.push('Sheet: "'+SHEET+'"');
-    d.innerHTML=r.map(x=>'<p style="font-size:10px;color:var(--muted);margin-bottom:2px">'+x+'</p>').join('');
+    d.innerHTML=r.map(function(x){return'<p style="font-size:10px;color:var(--muted);margin-bottom:2px">'+x+'</p>';}).join('');
 }
 
-// =============================================
-// Render
-// =============================================
 function renderProduct() {
-    const be = document.getElementById('banner-img');
+    var be = document.getElementById('banner-img');
     if(product.bannerImage){be.src=fixImg(product.bannerImage);be.style.display='block';}
     else if(product.productImage){be.src=fixImg(product.productImage);be.style.display='block';}
     else{be.style.display='none';document.getElementById('banner').style.display='none';}
-    const ce=document.getElementById('cat-badge');
+    var ce=document.getElementById('cat-badge');
     if(product.category){ce.textContent=product.category;ce.style.display='';}else{ce.style.display='none';}
     document.getElementById('prod-name').textContent=product.name||'Product';
-    const cur=product.currency||'USD', price=Number(product.sellingPrice)||0;
+    var cur=product.currency||'USD',price=Number(product.sellingPrice)||0;
     document.getElementById('price-block').innerHTML='<span style="font-size:22px;font-weight:800;color:var(--accent)">'+fmtPrice(price,cur)+'</span>';
-    if(product.description&&product.description.trim()){const b=document.getElementById('desc-block');b.classList.remove('hidden');const t=product.description.trim(),l=t.split('\n');if(l.length>3){document.getElementById('desc-text').innerHTML=l.slice(0,3).join('<br>')+'<span id="desc-more" class="hidden">'+l.slice(3).join('<br>')+'</span>';document.getElementById('desc-btn').classList.remove('hidden');document.getElementById('desc-btn').textContent='Read more';document.getElementById('desc-btn').dataset.open='0';}else{document.getElementById('desc-text').innerHTML=t.replace(/\n/g,'<br>');document.getElementById('desc-btn').classList.add('hidden');}}
+    if(product.description&&product.description.trim()){var b=document.getElementById('desc-block');b.classList.remove('hidden');var t=product.description.trim(),l=t.split('\n');if(l.length>3){document.getElementById('desc-text').innerHTML=l.slice(0,3).join('<br>')+'<span id="desc-more" class="hidden">'+l.slice(3).join('<br>')+'</span>';document.getElementById('desc-btn').classList.remove('hidden');document.getElementById('desc-btn').textContent='Read more';document.getElementById('desc-btn').dataset.open='0';}else{document.getElementById('desc-text').innerHTML=t.replace(/\n/g,'<br>');document.getElementById('desc-btn').classList.add('hidden');}}
     if(product.footerImage){document.getElementById('footer-section').classList.remove('hidden');document.getElementById('footer-img').src=fixImg(product.footerImage);}
     renderVariantCards();
 }
 
-function toggleDesc(){const b=document.getElementById('desc-btn'),m=document.getElementById('desc-more');if(b.dataset.open==='0'){m.classList.remove('hidden');b.textContent='Show less';b.dataset.open='1';}else{m.classList.add('hidden');b.textContent='Read more';b.dataset.open='0';}}
+function toggleDesc(){var b=document.getElementById('desc-btn'),m=document.getElementById('desc-more');if(b.dataset.open==='0'){m.classList.remove('hidden');b.textContent='Show less';b.dataset.open='1';}else{m.classList.add('hidden');b.textContent='Read more';b.dataset.open='0';}}
 
-// =============================================
-// VARIANT CARDS
-// =============================================
 function renderVariantCards() {
-    const c = document.getElementById('variant-cards'); c.innerHTML = '';
+    var c = document.getElementById('variant-cards'); c.innerHTML = '';
     if(product.skuMode==='off'){document.getElementById('variant-section').classList.add('hidden');return;}
+
+    // FIX: filter varian hantu — hapus yang tidak punya data berguna
+    variants = variants.filter(function(v) {
+        var hasSku = v.sku && v.sku.trim();
+        var hasColor = v.color && v.color.trim();
+        var hasSize = v.size && v.size.trim();
+        var hasImg = v.variantImage && v.variantImage.trim();
+        return hasSku || hasColor || hasSize || hasImg;
+    });
+
     if(!variants.length){c.innerHTML='<p style="color:var(--muted);font-size:12px;padding:10px 0">No variants.</p>';return;}
-    const hc=variants.some(v=>v.color&&v.color.trim()!==''), hs=variants.some(v=>v.size&&v.size.trim()!=='');
+    var hc=variants.some(function(v){return v.color&&v.color.trim()!=='';}),hs=variants.some(function(v){return v.size&&v.size.trim()!=='';});
     if(hc&&hs) renderColorSize(c);
     else if(hc) renderColorOnly(c);
     else if(hs) renderSizeOnly(c);
@@ -490,20 +437,25 @@ function renderVariantCards() {
 }
 
 function renderColorSize(container) {
-    const groups = groupByColor();
+    var groups = groupByColor();
     container.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3';
-    Object.entries(groups).forEach(([name, grp]) => {
-        const card = document.createElement('div');
+    Object.entries(groups).forEach(function(entry) {
+        var name = entry[0], grp = entry[1];
+        var card = document.createElement('div');
         card.className = 'variant-card';
         card.dataset.color = name; card.dataset.colorcode = grp.colorCode||'';
         applyCardBg(card, grp.colorCode);
-        const prices = grp.sizes.map(s=>Number(s.price)).filter(p=>p>0);
-        const mn=prices.length?Math.min(...prices):Number(product.sellingPrice)||0, mx=prices.length?Math.max(...prices):mn;
-        const ps=mn===mx?fmtPrice(mn):fmtPrice(mn)+' – '+fmtPrice(mx), showP=mn!==mx;
-        let h='<div class="card-head"><div class="flex items-center"><span class="clr-sw" style="background:'+(grp.colorCode||'#888')+'"></span><span class="clr-nm">'+esc(name)+'</span></div><span class="card-pr">'+ps+'</span></div>';
+        var prices = grp.sizes.map(function(s){return Number(s.price);}).filter(function(p){return p>0;});
+        var mn=prices.length?Math.min.apply(null,prices):Number(product.sellingPrice)||0, mx=prices.length?Math.max.apply(null,prices):mn;
+        var ps=mn===mx?fmtPrice(mn):fmtPrice(mn)+' – '+fmtPrice(mx), showP=mn!==mx;
+        var h='<div class="card-head"><div class="flex items-center"><span class="clr-sw" style="background:'+(grp.colorCode||'#888')+'"></span><span class="clr-nm">'+esc(name)+'</span></div><span class="card-pr">'+ps+'</span></div>';
         if(grp.image) h+='<div class="card-img"><img src="'+fixImg(grp.image)+'" alt="'+esc(name)+'" loading="lazy"></div>';
         h+='<div class="card-sizes">';
-        grp.sizes.forEach(s=>{const stk=Number(s.stock)||0,oos=stk<=0;h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(s.sku)+'" data-size="'+esc(s.size)+'" data-stock="'+stk+'" data-price="'+(Number(s.price)||0)+'" data-weight="'+(Number(s.weight)||0)+'" data-img="'+fixImg(esc(s.variantImage||''))+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(s.size)+(showP&&Number(v.price)>0?'<br>'+fmtPrice(Number(v.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';});
+        grp.sizes.forEach(function(s){
+            var stk=Number(s.stock)||0,oos=stk<=0;
+            // FIX: pakai s.price bukan v.price
+            h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(s.sku)+'" data-size="'+esc(s.size)+'" data-stock="'+stk+'" data-price="'+(Number(s.price)||0)+'" data-weight="'+(Number(s.weight)||0)+'" data-img="'+fixImg(esc(s.variantImage||''))+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(s.size)+(showP&&Number(s.price)>0?'<br>'+fmtPrice(Number(s.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';
+        });
         h+='</div>'+cardActionsHTML(false);
         card.innerHTML = h; container.appendChild(card);
     });
@@ -511,9 +463,9 @@ function renderColorSize(container) {
 
 function renderColorOnly(container) {
     container.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3';
-    variants.forEach(v => {
-        const stk=Number(v.stock)||0, oos=stk<=0;
-        const card = document.createElement('div');
+    variants.forEach(function(v) {
+        var stk=Number(v.stock)||0, oos=stk<=0;
+        var card = document.createElement('div');
         card.className = 'variant-card clickable';
         if(oos){card.style.opacity='.35';card.dataset.oos='1';}
         card.dataset.color=v.color||'Default'; card.dataset.colorcode=v.colorCode||'';
@@ -521,9 +473,10 @@ function renderColorOnly(container) {
         card.dataset.price=Number(v.price)||0; card.dataset.weight=Number(v.weight)||0;
         card.dataset.img=fixImg(v.variantImage||'');
         applyCardBg(card, v.colorCode);
-        const price=Number(v.price)||Number(product.sellingPrice)||0;
-        let h='<div class="card-head"><div class="flex items-center"><span class="clr-sw" style="background:'+(v.colorCode||'#888')+'"></span><span class="clr-nm">'+esc(v.color||'Default')+'</span></div><span class="card-pr">'+fmtPrice(price)+'</span></div>';
-        if(v.variantImage && v.variantImage.trim()) h+='<div class="card-img">...<img src="'+fixImg(esc(v.variantImage))+'" alt="'+esc(v.color)+'" loading="lazy"></div>';
+        var price=Number(v.price)||Number(product.sellingPrice)||0;
+        var h='<div class="card-head"><div class="flex items-center"><span class="clr-sw" style="background:'+(v.colorCode||'#888')+'"></span><span class="clr-nm">'+esc(v.color||'Default')+'</span></div><span class="card-pr">'+fmtPrice(price)+'</span></div>';
+        // FIX: hanya render gambar kalau URL valid
+        if(v.variantImage && v.variantImage.trim()) h+='<div class="card-img"><img src="'+fixImg(esc(v.variantImage))+'" alt="'+esc(v.color)+'" loading="lazy"></div>';
         h+='<div class="card-stk"><i class="fas fa-cube" style="font-size:9px"></i> '+(oos?'<span style="color:var(--error)">Out of stock</span>':stk+' available')+'</div>';
         h+=cardActionsHTML(oos);
         card.innerHTML = h; container.appendChild(card);
@@ -532,16 +485,22 @@ function renderColorOnly(container) {
 
 function renderSizeOnly(container) {
     container.className = '';
-    const card = document.createElement('div');
+    var card = document.createElement('div');
     card.className = 'variant-card';
     card.dataset.color=''; card.dataset.colorcode='';
-    const prices=variants.map(v=>Number(v.price)).filter(p=>p>0);
-    const mn=prices.length?Math.min(...prices):Number(product.sellingPrice)||0, mx=prices.length?Math.max(...prices):mn, showP=mn!==mx;
-    const img = fixImg(product.productImage || (variants.find(v => v.variantImage) || {}).variantImage || '');
-    let h='<div class="size-only-head">Select Size</div>';
+    var prices=variants.map(function(v){return Number(v.price);}).filter(function(p){return p>0;});
+    var mn=prices.length?Math.min.apply(null,prices):Number(product.sellingPrice)||0, mx=prices.length?Math.max.apply(null,prices):mn, showP=mn!==mx;
+    var firstWithImg = null;
+    for(var fi=0;fi<variants.length;fi++){if(variants[fi].variantImage){firstWithImg=variants[fi].variantImage;break;}}
+    var img = fixImg(product.productImage || (firstWithImg || ''));
+    var h='<div class="size-only-head">Select Size</div>';
     if(img) h+='<div class="card-img"><img src="'+img+'" alt="Product" loading="lazy"></div>';
     h+='<div class="card-sizes">';
-    variants.forEach(v=>{const stk=Number(v.stock)||0,oos=stk<=0;h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(v.sku)+'" data-size="'+esc(v.size)+'" data-stock="'+stk+'" data-price="'+(Number(v.price)||0)+'" data-weight="'+(Number(v.weight)||0)+'" data-img="'+fixImg(esc(v.variantImage||''))+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(v.size)+(showP&&Number(v.price)>0?'<br>'+fmtPrice(Number(s.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';});
+    variants.forEach(function(v){
+        var stk=Number(v.stock)||0,oos=stk<=0;
+        // FIX: pakai v.price bukan s.price
+        h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(v.sku)+'" data-size="'+esc(v.size)+'" data-stock="'+stk+'" data-price="'+(Number(v.price)||0)+'" data-weight="'+(Number(v.weight)||0)+'" data-img="'+fixImg(esc(v.variantImage||''))+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(v.size)+(showP&&Number(v.price)>0?'<br>'+fmtPrice(Number(v.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';
+    });
     h+='</div>'+cardActionsHTML(false);
     card.innerHTML = h; container.appendChild(card);
 }
@@ -551,87 +510,67 @@ function cardActionsHTML(disabled) {
 }
 
 function groupByColor() {
-    const m={};
-    variants.forEach(v=>{const k=v.color&&v.color.trim()?v.color.trim():'Default';if(!m[k])m[k]={colorCode:v.colorCode||'',image:v.variantImage||'',sizes:[]};if(!m[k].image&&v.variantImage)m[k].image=v.variantImage;m[k].sizes.push(v);});
+    var m={};
+    variants.forEach(function(v){var k=v.color&&v.color.trim()?v.color.trim():'Default';if(!m[k])m[k]={colorCode:v.colorCode||'',image:v.variantImage||'',sizes:[]};if(!m[k].image&&v.variantImage)m[k].image=v.variantImage;m[k].sizes.push(v);});
     return m;
 }
 
-// =============================================
-// Add from Card
-// =============================================
 function addFromCard(card) {
-    const hasPills = card.querySelectorAll('.sz-pill').length > 0;
-    if(hasPills && !card.dataset.selSku){card.classList.add('shake');setTimeout(()=>card.classList.remove('shake'),400);showToast('Select a size first','err');return;}
-    if(!card.dataset.selSku){card.classList.add('shake');setTimeout(()=>card.classList.remove('shake'),400);showToast('Select a variant','err');return;}
-    const qty=parseInt(card.querySelector('.c-qty-in').value)||1, stock=parseInt(card.dataset.selStock)||0;
+    var hasPills = card.querySelectorAll('.sz-pill').length > 0;
+    if(hasPills && !card.dataset.selSku){card.classList.add('shake');setTimeout(function(){card.classList.remove('shake');},400);showToast('Select a size first','err');return;}
+    if(!card.dataset.selSku){card.classList.add('shake');setTimeout(function(){card.classList.remove('shake');},400);showToast('Select a variant','err');return;}
+    var qty=parseInt(card.querySelector('.c-qty-in').value)||1, stock=parseInt(card.dataset.selStock)||0;
     if(stock>0&&qty>stock){showToast('Only '+stock+' available','err');return;}
-    const sku=card.dataset.selSku,color=card.dataset.color,colorCode=card.dataset.colorcode,
+    var sku=card.dataset.selSku,color=card.dataset.color,colorCode=card.dataset.colorcode,
           size=card.dataset.selSize||'',up=parseFloat(card.dataset.selPrice)||Number(product.sellingPrice)||0,
           wt=parseFloat(card.dataset.selWeight)||0,img=card.dataset.selImg||'';
-    const ex=cart.find(c=>c.sku===sku);
-    if(ex){const nq=ex.qty+qty;if(stock>0&&nq>stock){showToast('Max stock reached','err');return;}ex.qty=nq;}
-    else cart.push({sku,color,colorCode,size,qty,unitPrice:up,weight:wt,variantImage:img});
-    card.classList.add('card-added');setTimeout(()=>card.classList.remove('card-added'),500);
+    var ex=null;for(var ci=0;ci<cart.length;ci++){if(cart[ci].sku===sku){ex=cart[ci];break;}}
+    if(ex){var nq=ex.qty+qty;if(stock>0&&nq>stock){showToast('Max stock reached','err');return;}ex.qty=nq;}
+    else cart.push({sku:sku,color:color,colorCode:colorCode,size:size,qty:qty,unitPrice:up,weight:wt,variantImage:img});
+    card.classList.add('card-added');setTimeout(function(){card.classList.remove('card-added');},500);
     card.querySelector('.c-qty-in').value=1;
     renderCart(); showToast('Added to order','ok');
 }
 
-// =============================================
-// Cart
-// =============================================
 function removeFromCart(i){cart.splice(i,1);renderCart();}
 function renderCart() {
-    const em=document.getElementById('cart-empty'),it=document.getElementById('cart-items'),to=document.getElementById('cart-totals'),sb=document.getElementById('submit-btn');
+    var em=document.getElementById('cart-empty'),it=document.getElementById('cart-items'),to=document.getElementById('cart-totals'),sb=document.getElementById('submit-btn');
     if(!cart.length){em.classList.remove('hidden');it.classList.add('hidden');to.classList.add('hidden');sb.disabled=true;return;}
     em.classList.add('hidden');it.classList.remove('hidden');to.classList.remove('hidden');sb.disabled=false;
-    const cur=product.currency||'USD';let h='',sub=0,tw=0;
-    cart.forEach((item,i)=>{const t=item.unitPrice*item.qty;sub+=t;tw+=item.weight*item.qty;const lb=[item.color,item.size].filter(Boolean).join(' / ')||'Product';const lf=item.sku?lb+' ('+item.sku+')':lb;h+='<div class="cart-enter flex items-center gap-2 p-2 rounded-lg" style="background:var(--surface)">'+(item.variantImage?'<img src="'+fixImg(item.variantImage)+'" class="w-9 h-9 rounded-lg object-cover flex-shrink-0" style="background:var(--card)" alt="">':'')+'<div class="flex-1 min-w-0"><p class="text-xs font-semibold truncate">'+esc(lf)+'</p><p style="color:var(--muted);font-size:10px">'+fmtPrice(item.unitPrice,cur)+' x '+item.qty+'</p></div><div class="flex items-center gap-1 flex-shrink-0"><span class="text-xs font-bold">'+fmtPrice(t,cur)+'</span><button class="rm-btn" onclick="removeFromCart('+i+')" aria-label="Remove"><i class="fas fa-times"></i></button></div></div>';});
+    var cur=product.currency||'USD';var h='',sub=0,tw=0;
+    cart.forEach(function(item,i){var t=item.unitPrice*item.qty;sub+=t;tw+=item.weight*item.qty;var lb=[item.color,item.size].filter(Boolean).join(' / ')||'Product';var lf=item.sku?lb+' ('+item.sku+')':lb;h+='<div class="cart-enter flex items-center gap-2 p-2 rounded-lg" style="background:var(--surface)">'+(item.variantImage?'<img src="'+fixImg(item.variantImage)+'" class="w-9 h-9 rounded-lg object-cover flex-shrink-0" style="background:var(--card)" alt="">':'')+'<div class="flex-1 min-w-0"><p class="text-xs font-semibold truncate">'+esc(lf)+'</p><p style="color:var(--muted);font-size:10px">'+fmtPrice(item.unitPrice,cur)+' x '+item.qty+'</p></div><div class="flex items-center gap-1 flex-shrink-0"><span class="text-xs font-bold">'+fmtPrice(t,cur)+'</span><button class="rm-btn" onclick="removeFromCart('+i+')" aria-label="Remove"><i class="fas fa-times"></i></button></div></div>';});
     it.innerHTML=h;
-    const sk=Number(product.shippingCostPerKg)||0,se=Number(product.shipExtraPercent)||0;
-    let sc=(sk>0&&tw>0)?tw*sk*(1+se/100):0;const gr=sub+sc;
+    var sk=Number(product.shippingCostPerKg)||0,se=Number(product.shipExtraPercent)||0;
+    var sc=(sk>0&&tw>0)?tw*sk*(1+se/100):0;var gr=sub+sc;
     document.getElementById('t-sub').textContent=fmtPrice(sub,cur);
     document.getElementById('t-ship').textContent=sc>0?fmtPrice(sc,cur):'Free';
     document.getElementById('t-total').textContent=fmtPrice(gr,cur);
 }
 
-// =============================================
-// Submit Order
-// =============================================
 async function submitOrder() {
-    const n=document.getElementById('f-name').value.trim(),ph=document.getElementById('f-phone').value.trim(),
+    var n=document.getElementById('f-name').value.trim(),ph=document.getElementById('f-phone').value.trim(),
           em=document.getElementById('f-email').value.trim(),co=document.getElementById('f-country').value,
           ad=document.getElementById('f-addr').value.trim(),fe=document.getElementById('form-err');
     if(!n||!ph||!co||!ad){fe.textContent='Fill all required fields.';fe.classList.remove('hidden');document.getElementById('buyer-form').scrollIntoView({behavior:'smooth',block:'center'});return;}
     fe.classList.add('hidden');
     if(!cart.length){showToast('Cart empty','err');return;}
-    const cur=product.currency||'USD',sub=cart.reduce((s,i)=>s+i.unitPrice*i.qty,0),
-          tw=cart.reduce((s,i)=>s+i.weight*i.qty,0),sk=Number(product.shippingCostPerKg)||0,se=Number(product.shipExtraPercent)||0,
+    var cur=product.currency||'USD',sub=cart.reduce(function(s,i){return s+i.unitPrice*i.qty;},0),
+          tw=cart.reduce(function(s,i){return s+i.weight*i.qty;},0),sk=Number(product.shippingCostPerKg)||0,se=Number(product.shipExtraPercent)||0,
           sc=(sk>0&&tw>0)?tw*sk*(1+se/100):0,gt=sub+sc,
           oid='NV-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substring(2,5).toUpperCase();
-    lastOrderId = oid;
-    lastGrandTotal = gt;
-    lastCurrency = cur;
-    lastBuyerData = { name: n, phone: ph, email: em, country: co, address: ad };
-    
-    const order={orderId:oid,date:new Date().toISOString(),buyer:{name:n,phone:ph,email:em,country:co,address:ad},
-          items:cart.map(i=>({sku:i.sku,color:i.color,size:i.size,qty:i.qty,unitPrice:i.unitPrice,weight:i.weight})),
+    lastOrderId=oid; lastGrandTotal=gt; lastCurrency=cur;
+    lastBuyerData={name:n,phone:ph,email:em,country:co,address:ad};
+    var order={orderId:oid,date:new Date().toISOString(),buyer:{name:n,phone:ph,email:em,country:co,address:ad},
+          items:cart.map(function(i){return{sku:i.sku,color:i.color,size:i.size,qty:i.qty,unitPrice:i.unitPrice,weight:i.weight};}),
           subtotal:sub,shippingWeight:Math.round(tw*1000)/1000,shippingCost:Math.round(sc*100)/100,grandTotal:Math.round(gt*100)/100};
-    const btn=document.getElementById('submit-btn');btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i>Processing...';
+    var btn=document.getElementById('submit-btn');btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i>Processing...';
     try{
-        const r=await fetch(CFG.SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'saveAndNotify',sheet:SHEET,order,sellerEmail:CFG.SELLER_EMAIL,productTitle:product.name||'Product'})});
-        const tx=await r.text();let d;try{d=JSON.parse(tx);}catch{throw new Error('Invalid: '+tx.substring(0,150));}
+        var r=await fetch(CFG.SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'saveAndNotify',sheet:SHEET,order:order,sellerEmail:CFG.SELLER_EMAIL,productTitle:product.name||'Product'})});
+        var tx=await r.text();var d;try{d=JSON.parse(tx);}catch(e){throw new Error('Invalid: '+tx.substring(0,150));}
         if(!d.success)throw new Error(d.error||'Server error');
-
-        // Track event
-        fetch(CFG.SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'trackEvent',sheet:SHEET,event:'purchase',orderId:oid,itemsCount:cart.length,revenue:gt,details:'Order by '+n})}).catch(()=>{});
-
-        // Tampilkan modal sukses dengan data lengkap
-        showSuccessModal(oid, gt, cur, lastBuyerData);
-        
-        // Reset form & cart
-        cart = [];
-        renderCart();
-        document.getElementById('buyer-form').reset();
+        fetch(CFG.SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'trackEvent',sheet:SHEET,event:'purchase',orderId:oid,itemsCount:cart.length,revenue:gt,details:'Order by '+n})}).catch(function(){});
+        showSuccessModal(oid,gt,cur,lastBuyerData);
+        cart=[]; renderCart(); document.getElementById('buyer-form').reset();
     }catch(e){
         console.error(e);showToast('Failed: '+e.message,'err');
     }finally{
@@ -640,57 +579,33 @@ async function submitOrder() {
     }
 }
 
-// =============================================
-// Tampilkan modal sukses dengan data pembeli
-// =============================================
 function showSuccessModal(orderId, grandTotal, currency, buyer) {
-    document.getElementById('modal-oid').textContent = 'Order ID: ' + orderId;
-    document.getElementById('modal-total').textContent = fmtPrice(grandTotal, currency);
-    
-    // Isi data pembeli
-    document.getElementById('modal-name').textContent = buyer.name;
-    document.getElementById('modal-phone').textContent = buyer.phone;
-    document.getElementById('modal-country').textContent = buyer.country;
-    document.getElementById('modal-addr').textContent = buyer.address;
-    
-    // Email hanya tampilkan kalau diisi
-    if (buyer.email && buyer.email.trim()) {
-        document.getElementById('modal-email-row').style.display = 'flex';
-        document.getElementById('modal-email').textContent = buyer.email;
-    } else {
-        document.getElementById('modal-email-row').style.display = 'none';
-    }
-    
+    document.getElementById('modal-oid').textContent='Order ID: '+orderId;
+    document.getElementById('modal-total').textContent=fmtPrice(grandTotal,currency);
+    document.getElementById('modal-name').textContent=buyer.name;
+    document.getElementById('modal-phone').textContent=buyer.phone;
+    document.getElementById('modal-country').textContent=buyer.country;
+    document.getElementById('modal-addr').textContent=buyer.address;
+    if(buyer.email&&buyer.email.trim()){document.getElementById('modal-email-row').style.display='flex';document.getElementById('modal-email').textContent=buyer.email;}
+    else{document.getElementById('modal-email-row').style.display='none';}
     document.getElementById('success-modal').classList.add('show');
 }
 
-// =============================================
-// Complete Payment — buka PayPal dengan nominal otomatis
-// =============================================
 function completePayment() {
-    if (!CFG.PAYPAL_ME) {
-        showToast('PayPal link not configured', 'err');
-        return;
-    }
-    
-    // Format: https://paypal.me/novavariety/25.00USD
-    // Angka harus tanpa koma, pakai titik untuk desimal
-    const amount = lastGrandTotal.toFixed(2);
-    const currencyCode = lastCurrency.toUpperCase();
-    
-    // Bangun URL PayPal.me dengan nominal
-    let paypalUrl = CFG.PAYPAL_ME + '/' + amount + currencyCode;
-    
-    window.open(paypalUrl, '_blank');
+    if(!CFG.PAYPAL_ME){showToast('PayPal link not configured','err');return;}
+    // Push ke dataLayer untuk GTM tracking
+    window.dataLayer=window.dataLayer||[];
+    window.dataLayer.push({event:'complete_payment_click',order_id:lastOrderId,order_value:lastGrandTotal,currency:lastCurrency});
+    var amount=lastGrandTotal.toFixed(2);
+    var currencyCode=lastCurrency.toUpperCase();
+    var paypalUrl=CFG.PAYPAL_ME+'/'+amount+currencyCode;
+    window.open(paypalUrl,'_blank');
 }
 
-// =============================================
-// Utilities
-// =============================================
-function fmtPrice(v,c){const cc=c||product.currency||'USD',n=Number(v)||0;try{return new Intl.NumberFormat('en-US',{style:'currency',currency:cc,minimumFractionDigits:0,maximumFractionDigits:2}).format(n);}catch{return cc+' '+n.toFixed(2);}}
-function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-let tt=null;
-function showToast(m,t){const e=document.getElementById('toast');e.textContent=m;e.className='toast '+t;clearTimeout(tt);requestAnimationFrame(()=>{e.classList.add('show');tt=setTimeout(()=>e.classList.remove('show'),2500);});}
+function fmtPrice(v,c){var cc=c||product.currency||'USD',n=Number(v)||0;try{return new Intl.NumberFormat('en-US',{style:'currency',currency:cc,minimumFractionDigits:0,maximumFractionDigits:2}).format(n);}catch(e){return cc+' '+n.toFixed(2);}}
+function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+var tt=null;
+function showToast(m,t){var e=document.getElementById('toast');e.textContent=m;e.className='toast '+t;clearTimeout(tt);requestAnimationFrame(function(){e.classList.add('show');tt=setTimeout(function(){e.classList.remove('show');},2500);});}
 </script>
 </body>
 </html>
