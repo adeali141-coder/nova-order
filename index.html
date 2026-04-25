@@ -503,7 +503,7 @@ function renderColorSize(container) {
         let h='<div class="card-head"><div class="flex items-center"><span class="clr-sw" style="background:'+(grp.colorCode||'#888')+'"></span><span class="clr-nm">'+esc(name)+'</span></div><span class="card-pr">'+ps+'</span></div>';
         if(grp.image) h+='<div class="card-img"><img src="'+fixImg(grp.image)+'" alt="'+esc(name)+'" loading="lazy"></div>';
         h+='<div class="card-sizes">';
-        grp.sizes.forEach(s=>{const stk=Number(s.stock)||0,oos=stk<=0;h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(s.sku)+'" data-size="'+esc(s.size)+'" data-stock="'+stk+'" data-price="'+(Number(s.price)||0)+'" data-weight="'+(Number(s.weight)||0)+'" data-img="'+fixImg(esc(s.variantImage||''))+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(s.size)+(showP&&Number(s.price)>0?'<br>'+fmtPrice(Number(s.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';});
+        grp.sizes.forEach(s=>{const stk=Number(s.stock)||0,oos=stk<=0;h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(s.sku)+'" data-size="'+esc(s.size)+'" data-stock="'+stk+'" data-price="'+(Number(s.price)||0)+'" data-weight="'+(Number(s.weight)||0)+'" data-img="'+fixImg(esc(s.variantImage||''))+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(s.size)+(showP&&Number(v.price)>0?'<br>'+fmtPrice(Number(v.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';});
         h+='</div>'+cardActionsHTML(false);
         card.innerHTML = h; container.appendChild(card);
     });
@@ -523,7 +523,7 @@ function renderColorOnly(container) {
         applyCardBg(card, v.colorCode);
         const price=Number(v.price)||Number(product.sellingPrice)||0;
         let h='<div class="card-head"><div class="flex items-center"><span class="clr-sw" style="background:'+(v.colorCode||'#888')+'"></span><span class="clr-nm">'+esc(v.color||'Default')+'</span></div><span class="card-pr">'+fmtPrice(price)+'</span></div>';
-        if(v.variantImage) h+='<div class="card-img"><img src="'+fixImg(esc(v.variantImage))+'" alt="'+esc(v.color)+'" loading="lazy"></div>';
+        if(v.variantImage && v.variantImage.trim()) h+='<div class="card-img">...<img src="'+fixImg(esc(v.variantImage))+'" alt="'+esc(v.color)+'" loading="lazy"></div>';
         h+='<div class="card-stk"><i class="fas fa-cube" style="font-size:9px"></i> '+(oos?'<span style="color:var(--error)">Out of stock</span>':stk+' available')+'</div>';
         h+=cardActionsHTML(oos);
         card.innerHTML = h; container.appendChild(card);
