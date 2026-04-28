@@ -269,6 +269,20 @@ var COUNTRIES = ['United States','United Kingdom','Canada','Australia','Germany'
 var product = null, variants = [], cart = [], lastOrderId = '', lastGrandTotal = 0, lastCurrency = 'USD', lastBuyerData = null;
 var SHEET = new URLSearchParams(window.location.search).get('sheet') || 'Long_Sleeve';
 
+// META PIXEL: helper functions untuk tracking
+function fbqTrack(eventName, params) {
+    if (typeof fbq === 'function') {
+        if (params) fbq('track', eventName, params);
+        else fbq('track', eventName);
+    }
+}
+function fbqCustom(eventName, params) {
+    if (typeof fbq === 'function') {
+        if (params) fbq('trackCustom', eventName, params);
+        else fbq('trackCustom', eventName);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     var sel = document.getElementById('f-country');
     COUNTRIES.forEach(function(c) { var o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
@@ -369,6 +383,17 @@ async function fetchProduct() {
         }
         if (product.gtmId) { var s=document.createElement('script'); s.textContent="(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','"+product.gtmId+"');"; document.head.prepend(s); }
         if (product.ga4Id) { var s3=document.createElement('script'); s3.src='https://www.googletagmanager.com/gtag/js?id='+product.ga4Id; document.head.prepend(s3); var s4=document.createElement('script'); s4.textContent="window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','"+product.ga4Id+"');"; document.head.appendChild(s4); }
+
+        // META PIXEL: inject Meta Pixel (init + PageView)
+        if (product.metaPixelId) {
+            var ms = document.createElement('script');
+            ms.textContent = "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','"+product.metaPixelId+"');fbq('track','PageView');";
+            document.head.prepend(ms);
+            var mns = document.createElement('noscript');
+            mns.innerHTML = '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id='+product.metaPixelId+'&ev=PageView&noscript=1"/>';
+            document.head.appendChild(mns);
+        }
+
         renderProduct();
         document.getElementById('loader').classList.add('hide');
         document.getElementById('app').classList.remove('hidden');
@@ -411,6 +436,16 @@ function renderProduct() {
     if(product.description&&product.description.trim()){var b=document.getElementById('desc-block');b.classList.remove('hidden');var t=product.description.trim(),l=t.split('\n');if(l.length>3){document.getElementById('desc-text').innerHTML=l.slice(0,3).join('<br>')+'<span id="desc-more" class="hidden">'+l.slice(3).join('<br>')+'</span>';document.getElementById('desc-btn').classList.remove('hidden');document.getElementById('desc-btn').textContent='Read more';document.getElementById('desc-btn').dataset.open='0';}else{document.getElementById('desc-text').innerHTML=t.replace(/\n/g,'<br>');document.getElementById('desc-btn').classList.add('hidden');}}
     if(product.footerImage){document.getElementById('footer-section').classList.remove('hidden');document.getElementById('footer-img').src=fixImg(product.footerImage);}
     renderVariantCards();
+
+    // META PIXEL: ViewContent
+    fbqTrack('ViewContent', {
+        content_name: product.name || 'Product',
+        content_category: product.category || '',
+        content_ids: [SHEET],
+        content_type: 'product',
+        currency: cur,
+        value: price
+    });
 }
 
 function toggleDesc(){var b=document.getElementById('desc-btn'),m=document.getElementById('desc-more');if(b.dataset.open==='0'){m.classList.remove('hidden');b.textContent='Show less';b.dataset.open='1';}else{m.classList.add('hidden');b.textContent='Read more';b.dataset.open='0';}}
@@ -419,7 +454,6 @@ function renderVariantCards() {
     var c = document.getElementById('variant-cards'); c.innerHTML = '';
     if(product.skuMode==='off'){document.getElementById('variant-section').classList.add('hidden');return;}
 
-    // FIX: filter varian hantu — hapus yang tidak punya data berguna
     variants = variants.filter(function(v) {
         var hasSku = v.sku && v.sku.trim();
         var hasColor = v.color && v.color.trim();
@@ -453,7 +487,6 @@ function renderColorSize(container) {
         h+='<div class="card-sizes">';
         grp.sizes.forEach(function(s){
             var stk=Number(s.stock)||0,oos=stk<=0;
-            // FIX: pakai s.price bukan v.price
             h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(s.sku)+'" data-size="'+esc(s.size)+'" data-stock="'+stk+'" data-price="'+(Number(s.price)||0)+'" data-weight="'+(Number(s.weight)||0)+'" data-img="'+fixImg(esc(s.variantImage||''))+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(s.size)+(showP&&Number(s.price)>0?'<br>'+fmtPrice(Number(s.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';
         });
         h+='</div>'+cardActionsHTML(false);
@@ -475,7 +508,6 @@ function renderColorOnly(container) {
         applyCardBg(card, v.colorCode);
         var price=Number(v.price)||Number(product.sellingPrice)||0;
         var h='<div class="card-head"><div class="flex items-center"><span class="clr-sw" style="background:'+(v.colorCode||'#888')+'"></span><span class="clr-nm">'+esc(v.color||'Default')+'</span></div><span class="card-pr">'+fmtPrice(price)+'</span></div>';
-        // FIX: hanya render gambar kalau URL valid
         if(v.variantImage && v.variantImage.trim()) h+='<div class="card-img"><img src="'+fixImg(esc(v.variantImage))+'" alt="'+esc(v.color)+'" loading="lazy"></div>';
         h+='<div class="card-stk"><i class="fas fa-cube" style="font-size:9px"></i> '+(oos?'<span style="color:var(--error)">Out of stock</span>':stk+' available')+'</div>';
         h+=cardActionsHTML(oos);
@@ -498,7 +530,6 @@ function renderSizeOnly(container) {
     h+='<div class="card-sizes">';
     variants.forEach(function(v){
         var stk=Number(v.stock)||0,oos=stk<=0;
-        // FIX: pakai v.price bukan s.price
         h+='<button class="sz-pill'+(oos?' oos':'')+'" type="button" data-sku="'+esc(v.sku)+'" data-size="'+esc(v.size)+'" data-stock="'+stk+'" data-price="'+(Number(v.price)||0)+'" data-weight="'+(Number(v.weight)||0)+'" data-img="'+fixImg(esc(v.variantImage||''))+'" '+(oos?'disabled':'')+'><span class="sz-lbl">'+esc(v.size)+(showP&&Number(v.price)>0?'<br>'+fmtPrice(Number(v.price)):'')+'</span><span class="sz-stk">'+(oos?'Sold out':stk+' left')+'</span></button>';
     });
     h+='</div>'+cardActionsHTML(false);
@@ -529,6 +560,17 @@ function addFromCard(card) {
     else cart.push({sku:sku,color:color,colorCode:colorCode,size:size,qty:qty,unitPrice:up,weight:wt,variantImage:img});
     card.classList.add('card-added');setTimeout(function(){card.classList.remove('card-added');},500);
     card.querySelector('.c-qty-in').value=1;
+
+    // META PIXEL: AddToCart
+    fbqTrack('AddToCart', {
+        content_name: color + (size ? ' / ' + size : ''),
+        content_ids: [sku],
+        content_type: 'product',
+        currency: product.currency || 'USD',
+        value: up,
+        quantity: qty
+    });
+
     renderCart(); showToast('Added to order','ok');
 }
 
@@ -563,11 +605,32 @@ async function submitOrder() {
     var order={orderId:oid,date:new Date().toISOString(),buyer:{name:n,phone:ph,email:em,country:co,address:ad},
           items:cart.map(function(i){return{sku:i.sku,color:i.color,size:i.size,qty:i.qty,unitPrice:i.unitPrice,weight:i.weight};}),
           subtotal:sub,shippingWeight:Math.round(tw*1000)/1000,shippingCost:Math.round(sc*100)/100,grandTotal:Math.round(gt*100)/100};
+
+    // META PIXEL: InitiateCheckout
+    fbqTrack('InitiateCheckout', {
+        content_ids: cart.map(function(i){ return i.sku; }),
+        content_type: 'product',
+        currency: cur,
+        value: sub,
+        num_items: cart.reduce(function(s,i){ return s+i.qty; }, 0)
+    });
+
     var btn=document.getElementById('submit-btn');btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i>Processing...';
     try{
         var r=await fetch(CFG.SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'saveAndNotify',sheet:SHEET,order:order,sellerEmail:CFG.SELLER_EMAIL,productTitle:product.name||'Product'})});
         var tx=await r.text();var d;try{d=JSON.parse(tx);}catch(e){throw new Error('Invalid: '+tx.substring(0,150));}
         if(!d.success)throw new Error(d.error||'Server error');
+
+        // META PIXEL: Purchase
+        fbqTrack('Purchase', {
+            content_ids: order.items.map(function(it){ return it.sku || ''; }),
+            content_type: 'product',
+            currency: cur,
+            value: gt,
+            num_items: order.items.length,
+            order_id: oid
+        });
+
         fetch(CFG.SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'trackEvent',sheet:SHEET,event:'purchase',orderId:oid,itemsCount:cart.length,revenue:gt,details:'Order by '+n})}).catch(function(){});
         showSuccessModal(oid,gt,cur,lastBuyerData);
         cart=[]; renderCart(); document.getElementById('buyer-form').reset();
@@ -593,7 +656,6 @@ function showSuccessModal(orderId, grandTotal, currency, buyer) {
 
 function completePayment() {
     if(!CFG.PAYPAL_ME){showToast('PayPal link not configured','err');return;}
-    // Push ke dataLayer untuk GTM tracking
     window.dataLayer=window.dataLayer||[];
     window.dataLayer.push({event:'complete_payment_click',order_id:lastOrderId,order_value:lastGrandTotal,currency:lastCurrency});
     var amount=lastGrandTotal.toFixed(2);
